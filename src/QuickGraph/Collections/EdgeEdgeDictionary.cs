@@ -1,25 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using QuickGraph.Clonable;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
+    using System.Collections.Generic;
+
+    using QuickGraph.Clonable;
+
     public class EdgeEdgeDictionary<TVertex, TEdge>
         : Dictionary<TEdge, TEdge>
-        , ICloneable
+          ,
+          ICloneable
         where TEdge : IEdge<TVertex>
     {
         public EdgeEdgeDictionary()
-        { }
+        {
+        }
 
         public EdgeEdgeDictionary(int capacity)
             : base(capacity)
-        { }
+        {
+        }
 
         public EdgeEdgeDictionary<TVertex, TEdge> Clone()
         {
-            var clone = new EdgeEdgeDictionary<TVertex, TEdge>(this.Count);
+            var clone = new EdgeEdgeDictionary<TVertex, TEdge>(Count);
             foreach (var kv in this)
                 clone.Add(kv.Key, kv.Value);
             return clone;
@@ -27,7 +29,7 @@ namespace QuickGraph.Collections
 
         object ICloneable.Clone()
         {
-            return this.Clone();
+            return Clone();
         }
     }
 }

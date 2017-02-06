@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using QuickGraph.Collections;
-
-namespace QuickGraph.Algorithms.Condensation
+﻿namespace QuickGraph.Algorithms.Condensation
 {
+    using System.Collections.Generic;
+
     public sealed class CondensedEdge<TVertex, TEdge, TGraph> : Edge<TGraph>
         where TEdge : IEdge<TVertex>
         where TGraph : IMutableVertexAndEdgeSet<TVertex, TEdge>, new()
     {
-        private List<TEdge> edges = new List<TEdge>();
-        public CondensedEdge(TGraph source, TGraph target)
-            :base(source,target)
-        { }
+        private readonly List<TEdge> _edges = new List<TEdge>();
 
-        public IList<TEdge> Edges
+        public IList<TEdge> Edges => _edges;
+
+        public CondensedEdge(TGraph source, TGraph target)
+            : base(source, target)
         {
-            get { return this.edges; }
         }
     }
 }

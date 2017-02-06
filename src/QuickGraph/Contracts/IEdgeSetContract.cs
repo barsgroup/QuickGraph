@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
     [ContractClassFor(typeof(IEdgeSet<,>))]
-    abstract class IEdgeSetContract<TVertex, TEdge> 
+    internal abstract class EdgeSetContract<TVertex, TEdge>
         : IEdgeSet<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         bool IEdgeSet<TVertex, TEdge>.IsEdgesEmpty
         {
-            get 
+            get
             {
                 IEdgeSet<TVertex, TEdge> ithis = this;
                 Contract.Ensures(Contract.Result<bool>() == (ithis.EdgeCount == 0));
@@ -27,7 +25,7 @@ namespace QuickGraph.Contracts
             get
             {
                 IEdgeSet<TVertex, TEdge> ithis = this;
-                Contract.Ensures(Contract.Result<int>() == Enumerable.Count(ithis.Edges));
+                Contract.Ensures(Contract.Result<int>() == ithis.Edges.Count());
 
                 return default(int);
             }
@@ -35,12 +33,12 @@ namespace QuickGraph.Contracts
 
         IEnumerable<TEdge> IEdgeSet<TVertex, TEdge>.Edges
         {
-            get 
+            get
             {
                 Contract.Ensures(Contract.Result<IEnumerable<TEdge>>() != null);
-                Contract.Ensures(Enumerable.All<TEdge>(Contract.Result<IEnumerable<TEdge>>(), e => e != null));
+                Contract.Ensures(Contract.Result<IEnumerable<TEdge>>().All(e => e != null));
 
-                return default(IEnumerable<TEdge>);            
+                return default(IEnumerable<TEdge>);
             }
         }
 

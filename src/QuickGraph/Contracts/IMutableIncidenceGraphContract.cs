@@ -1,28 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
     [ContractClassFor(typeof(IMutableIncidenceGraph<,>))]
-    abstract class IMutableIncidenceGraphContract<TVertex, TEdge>
+    internal abstract class MutableIncidenceGraphContract<TVertex, TEdge>
         : IMutableIncidenceGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        #region IMutableGraph<TVertex,TEdge> Members
+
+        void IMutableGraph<TVertex, TEdge>.Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IImplicitVertexSet<TVertex> Members
+
+        bool IImplicitVertexSet<TVertex>.ContainsVertex(TVertex vertex)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
         #region IMutableIncidenceGraph<TVertex,TEdge> Members
 
         int IMutableIncidenceGraph<TVertex, TEdge>.RemoveOutEdgeIf(
-            TVertex v, 
+            TVertex v,
             EdgePredicate<TVertex, TEdge> predicate)
         {
             IMutableIncidenceGraph<TVertex, TEdge> ithis = this;
             Contract.Requires(v != null);
             Contract.Requires(ithis.ContainsVertex(v));
             Contract.Requires(predicate != null);
-            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(Enumerable.Count(ithis.OutEdges(v), ve => predicate(ve))));
-            Contract.Ensures(Enumerable.All(ithis.OutEdges(v), ve => !predicate(ve)));
+            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(ithis.OutEdges(v).Count(ve => predicate(ve))));
+            Contract.Ensures(ithis.OutEdges(v).All(ve => !predicate(ve)));
 
             return default(int);
         }
@@ -36,14 +59,7 @@ namespace QuickGraph.Contracts
         }
 
         void IMutableIncidenceGraph<TVertex, TEdge>.TrimEdgeExcess()
-        {}
-        #endregion
-
-        #region IMutableGraph<TVertex,TEdge> Members
-
-        void IMutableGraph<TVertex, TEdge>.Clear()
         {
-            throw new NotImplementedException();
         }
 
         #endregion
@@ -109,20 +125,5 @@ namespace QuickGraph.Contracts
         }
 
         #endregion
-
-        #region IImplicitVertexSet<TVertex> Members
-        bool IImplicitVertexSet<TVertex>.ContainsVertex(TVertex vertex)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
     }
 }

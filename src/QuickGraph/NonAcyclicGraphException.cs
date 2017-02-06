@@ -1,14 +1,20 @@
-﻿using System;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
+    using System;
+
     public class NonAcyclicGraphException
         : QuickGraphException
     {
-        public NonAcyclicGraphException() { }
-        public NonAcyclicGraphException(string message) : base( message ) { }
-        public NonAcyclicGraphException(string message, System.Exception inner) : base( message, inner ) { }
+        public NonAcyclicGraphException()
+        {
+        }
+
+        public NonAcyclicGraphException(string message) : base(message)
+        {
+        }
+
+        public NonAcyclicGraphException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 }
-
-

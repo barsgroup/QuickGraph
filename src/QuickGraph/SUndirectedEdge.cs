@@ -1,26 +1,18 @@
-﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// An struct based <see cref="IUndirectedEdge&lt;TVertex&gt;"/> implementation.
-    /// </summary>
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+    using System.Runtime.InteropServices;
+
+    /// <summary>An struct based <see cref="IUndirectedEdge&lt;TVertex&gt;" /> implementation.</summary>
     /// <typeparam name="TVertex">The type of the vertex.</typeparam>
     [DebuggerDisplay(EdgeExtensions.DebuggerDisplayUndirectedEdgeFormatString)]
     [StructLayout(LayoutKind.Auto)]
     public struct SUndirectedEdge<TVertex>
         : IUndirectedEdge<TVertex>
     {
-        private readonly TVertex source;
-        private readonly TVertex target;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SUndirectedEdge&lt;TVertex&gt;"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="SUndirectedEdge&lt;TVertex&gt;" /> class.</summary>
         /// <param name="source">The source.</param>
         /// <param name="target">The target.</param>
         public SUndirectedEdge(TVertex source, TVertex target)
@@ -31,40 +23,26 @@ namespace QuickGraph
             Contract.Ensures(Contract.ValueAtReturn(out this).Source.Equals(source));
             Contract.Ensures(Contract.ValueAtReturn(out this).Target.Equals(target));
 
-            this.source = source;
-            this.target = target;
+            Source = source;
+            Target = target;
         }
 
-        /// <summary>
-        /// Gets the source vertex
-        /// </summary>
+        /// <summary>Gets the source vertex</summary>
         /// <value></value>
-        public TVertex Source
-        {
-            get { return this.source; }
-        }
+        public TVertex Source { get; }
 
-        /// <summary>
-        /// Gets the target vertex
-        /// </summary>
+        /// <summary>Gets the target vertex</summary>
         /// <value></value>
-        public TVertex Target
-        {
-            get { return this.target; }
-        }
+        public TVertex Target { get; }
 
-        /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
+        /// <summary>Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.</summary>
+        /// <returns>A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.</returns>
         public override string ToString()
         {
-            return String.Format(
-                EdgeExtensions.UndirectedEdgeFormatString, 
-                this.Source, 
-                this.Target);
+            return string.Format(
+                EdgeExtensions.UndirectedEdgeFormatString,
+                Source,
+                Target);
         }
     }
 }

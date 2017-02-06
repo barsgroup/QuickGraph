@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using QuickGraph.Contracts;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// A mutable incidence graph
-    /// </summary>
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Contracts;
+
+    /// <summary>A mutable incidence graph</summary>
     /// <typeparam name="TVertex"></typeparam>
     /// <typeparam name="TEdge"></typeparam>
-    [ContractClass(typeof(IMutableIncidenceGraphContract<,>))]
-    public interface IMutableIncidenceGraph<TVertex,TEdge> 
-        : IMutableGraph<TVertex,TEdge>
-        , IIncidenceGraph<TVertex,TEdge>
+    [ContractClass(typeof(MutableIncidenceGraphContract<,>))]
+    public interface IMutableIncidenceGraph<TVertex, TEdge>
+        : IMutableGraph<TVertex, TEdge>
+          ,
+          IIncidenceGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Removes all out edges of <paramref name="v"/>
-        /// where <paramref name="predicate"/> evalutes to true.
+        /// <summary>Trims the out edges of vertex <paramref name="v" />
         /// </summary>
+        /// <param name="v"></param>
+        void ClearOutEdges(TVertex v);
+
+        /// <summary>Removes all out edges of <paramref name="v" />
+        ///     where <paramref name="predicate" /> evalutes to true.</summary>
         /// <param name="v"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
@@ -27,15 +28,7 @@ namespace QuickGraph
             TVertex v,
             EdgePredicate<TVertex, TEdge> predicate);
 
-        /// <summary>
-        /// Trims the out edges of vertex <paramref name="v"/>
-        /// </summary>
-        /// <param name="v"></param>
-        void ClearOutEdges(TVertex v);
-
-        /// <summary>
-        /// Trims excess storage allocated for edges
-        /// </summary>
+        /// <summary>Trims excess storage allocated for edges</summary>
         void TrimEdgeExcess();
     }
 }

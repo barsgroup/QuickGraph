@@ -153,7 +153,6 @@
 //        /// </summary>
 //        public event VertexEventHandler DiscoverVertex;
 
-
 //        /// <summary>
 //        /// Raises the <see cref="DiscoverVertex"/> event.
 //        /// </summary>
@@ -168,7 +167,6 @@
 //        /// Invoked on every out-edge of each vertex after it is discovered. 
 //        /// </summary>
 //        public event EdgeEventHandler ExamineEdge;
-
 
 //        /// <summary>
 //        /// Raises the <see cref="ExamineEdge"/> event.
@@ -187,7 +185,6 @@
 //        /// </summary>
 //        public event EdgeEventHandler TreeEdge;
 
-
 //        /// <summary>
 //        /// Raises the <see cref="TreeEdge"/> event.
 //        /// </summary>
@@ -202,7 +199,6 @@
 //        /// Invoked on the back edges in the graph. 
 //        /// </summary>
 //        public event EdgeEventHandler BackEdge;
-
 
 //        /// <summary>
 //        /// Raises the <see cref="BackEdge"/> event.
@@ -219,7 +215,6 @@
 //        /// (In an undirected graph this method is never called.) 
 //        /// </summary>
 //        public event EdgeEventHandler ForwardOrCrossEdge;
-
 
 //        /// <summary>
 //        /// Raises the <see cref="ForwardOrCrossEdge"/> event.
@@ -391,3 +386,4 @@
 //        }
 //    }
 //}
+

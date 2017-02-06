@@ -1,70 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using QuickGraph.Algorithms;
-using System.Diagnostics;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
+    using QuickGraph.Algorithms;
+
     [DebuggerDisplay("Count = {Count}")]
     public sealed class FibonacciQueue<TVertex, TDistance> :
         IPriorityQueue<TVertex>
     {
+        private readonly Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>> _cells;
+
+        private readonly Func<TVertex, TDistance> _distances;
+
+        private readonly FibonacciHeap<TDistance, TVertex> _heap;
+
         public FibonacciQueue(Func<TVertex, TDistance> distances)
             : this(0, null, distances, Comparer<TDistance>.Default.Compare)
-        { }
+        {
+        }
 
         public FibonacciQueue(
             int valueCount,
             IEnumerable<TVertex> values,
             Func<TVertex, TDistance> distances
-            )
+        )
             : this(valueCount, values, distances, Comparer<TDistance>.Default.Compare)
-        { }
+        {
+        }
 
         public FibonacciQueue(
             int valueCount,
             IEnumerable<TVertex> values,
             Func<TVertex, TDistance> distances,
             Func<TDistance, TDistance, int> distanceComparison
-            )
+        )
         {
             Contract.Requires(valueCount >= 0);
-            Contract.Requires(valueCount == 0 || (values != null && valueCount == Enumerable.Count(values)));
+            Contract.Requires(valueCount == 0 || values != null && valueCount == values.Count());
             Contract.Requires(distances != null);
             Contract.Requires(distanceComparison != null);
 
-            this.distances = distances;
-            this.cells = new Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>>(valueCount);
+            _distances = distances;
+            _cells = new Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>>(valueCount);
             if (valueCount > 0)
+            {
                 foreach (var x in values)
-                    this.cells.Add(
+                    _cells.Add(
                         x,
                         new FibonacciHeapCell<TDistance, TVertex>
                         {
-                            Priority = this.distances(x),
+                            Priority = _distances(x),
                             Value = x,
                             Removed = true
                         }
                     );
-            this.heap = new FibonacciHeap<TDistance, TVertex>(HeapDirection.Increasing, distanceComparison);
+            }
+            _heap = new FibonacciHeap<TDistance, TVertex>(HeapDirection.Increasing, distanceComparison);
         }
 
         public FibonacciQueue(
             Dictionary<TVertex, TDistance> values,
             Func<TDistance, TDistance, int> distanceComparison
-            )
+        )
         {
             Contract.Requires(values != null);
             Contract.Requires(distanceComparison != null);
 
-            this.distances = AlgorithmExtensions.GetIndexer(values);
-            this.cells = new Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>>(values.Count);
+            _distances = AlgorithmExtensions.GetIndexer(values);
+            _cells = new Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>>(values.Count);
             foreach (var kv in values)
-                this.cells.Add(
+                _cells.Add(
                     kv.Key,
                     new FibonacciHeapCell<TDistance, TVertex>
                     {
@@ -73,68 +82,67 @@ namespace QuickGraph.Collections
                         Removed = true
                     }
                 );
-            this.heap = new FibonacciHeap<TDistance, TVertex>(HeapDirection.Increasing, distanceComparison);
+            _heap = new FibonacciHeap<TDistance, TVertex>(HeapDirection.Increasing, distanceComparison);
         }
 
         public FibonacciQueue(
             Dictionary<TVertex, TDistance> values)
             : this(values, Comparer<TDistance>.Default.Compare)
-        { }
+        {
+        }
 
-        private readonly FibonacciHeap<TDistance, TVertex> heap;
-        private readonly Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>> cells;        
-        private readonly Func<TVertex, TDistance> distances;
         #region IQueue<TVertex> Members
 
         public int Count
         {
             [Pure]
-            get { return this.heap.Count; }
+            get { return _heap.Count; }
         }
 
         [Pure]
         public bool Contains(TVertex value)
         {
             FibonacciHeapCell<TDistance, TVertex> result;
-            return 
-                this.cells.TryGetValue(value, out result) && 
+            return
+                _cells.TryGetValue(value, out result) &&
                 !result.Removed;
         }
 
         public void Update(TVertex v)
         {
-            this.heap.ChangeKey(this.cells[v], this.distances(v));
+            _heap.ChangeKey(_cells[v], _distances(v));
         }
 
         public void Enqueue(TVertex value)
         {
-            this.cells[value] = this.heap.Enqueue(this.distances(value), value);
+            _cells[value] = _heap.Enqueue(_distances(value), value);
         }
 
         public TVertex Dequeue()
         {
-            var result = heap.Top;
+            var result = _heap.Top;
             Contract.Assert(result != null);
-            heap.Dequeue();            
+            _heap.Dequeue();
             return result.Value;
         }
 
         public TVertex Peek()
         {
-            Contract.Assert(this.heap.Top != null);
+            Contract.Assert(_heap.Top != null);
 
-            return this.heap.Top.Value;
+            return _heap.Top.Value;
         }
 
         [Pure]
         public TVertex[] ToArray()
         {
-            TVertex[] result = new TVertex[this.heap.Count];
-            int i = 0;
-            foreach (var entry in this.heap)
+            var result = new TVertex[_heap.Count];
+            var i = 0;
+            foreach (var entry in _heap)
                 result[i++] = entry.Value;
             return result;
         }
+
         #endregion
     }
 }

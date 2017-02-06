@@ -1,34 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Predicates
+﻿namespace QuickGraph.Predicates
 {
-    public sealed class ResidualEdgePredicate<TVertex,TEdge>
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    public sealed class ResidualEdgePredicate<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-		private readonly IDictionary<TEdge,double> residualCapacities;
+        public IDictionary<TEdge, double> ResidualCapacities { get; }
 
         public ResidualEdgePredicate(
-            IDictionary<TEdge,double> residualCapacities)
-		{
+            IDictionary<TEdge, double> residualCapacities)
+        {
             Contract.Requires(residualCapacities != null);
 
-            this.residualCapacities = residualCapacities;
-		}
+            ResidualCapacities = residualCapacities;
+        }
 
-		public IDictionary<TEdge,double> ResidualCapacities
-		{
-			get
-			{
-				return this.residualCapacities;
-			}
-		}
-
-		public bool Test(TEdge e)
-		{
+        public bool Test(TEdge e)
+        {
             Contract.Requires(e != null);
-			return 0 < this.residualCapacities[e];
-		}
+            return 0 < ResidualCapacities[e];
+        }
     }
 }

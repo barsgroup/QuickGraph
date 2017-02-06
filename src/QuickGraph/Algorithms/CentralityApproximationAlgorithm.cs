@@ -1,87 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-
-using QuickGraph.Algorithms.ShortestPath;
-using QuickGraph.Algorithms.Observers;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Algorithms.ShortestPath;
+
     public sealed class CentralityApproximationAlgorithm<TVertex, TEdge> :
-        AlgorithmBase<IVertexListGraph<TVertex,TEdge>>
+        AlgorithmBase<IVertexListGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        private Random rand = new Random();
-        private DijkstraShortestPathAlgorithm<TVertex, TEdge> dijkstra;
-        private VertexPredecessorRecorderObserver<TVertex, TEdge> predecessorRecorder;
-        private int maxIterationCount = 50;
-        private IDictionary<TVertex, double> centralities = new Dictionary<TVertex, double>();
+        private readonly IDictionary<TVertex, double> _centralities = new Dictionary<TVertex, double>();
+
+        private readonly DijkstraShortestPathAlgorithm<TVertex, TEdge> _dijkstra;
+
+        private readonly VertexPredecessorRecorderObserver<TVertex, TEdge> _predecessorRecorder;
+
+        public Func<TEdge, double> Distances => _dijkstra.Weights;
+
+        public Random Rand { get; set; } = new Random();
+
+        public int MaxIterationCount { get; set; } = 50;
 
         public CentralityApproximationAlgorithm(
             IVertexListGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> distances
-            )
-            :base(visitedGraph)
+        )
+            : base(visitedGraph)
         {
             Contract.Requires(distances != null);
 
-            this.dijkstra = new DijkstraShortestPathAlgorithm<TVertex, TEdge>(
-                this.VisitedGraph,
+            _dijkstra = new DijkstraShortestPathAlgorithm<TVertex, TEdge>(
+                VisitedGraph,
                 distances,
                 DistanceRelaxers.ShortestDistance
-                );
-            this.predecessorRecorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>();
-            this.predecessorRecorder.Attach(this.dijkstra);
-        }
-
-        public Func<TEdge, double> Distances
-        {
-            get { return this.dijkstra.Weights; }
-        }
-
-        public Random Rand
-        {
-            get { return this.rand; }
-            set { this.rand = value; }
-        }
-
-        public int MaxIterationCount
-        {
-            get { return this.maxIterationCount; }
-            set { this.maxIterationCount = value; }
+            );
+            _predecessorRecorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>();
+            _predecessorRecorder.Attach(_dijkstra);
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            this.centralities.Clear();
-            foreach (var v in this.VisitedGraph.Vertices)
-                this.centralities.Add(v, 0);
+            _centralities.Clear();
+            foreach (var v in VisitedGraph.Vertices)
+                _centralities.Add(v, 0);
         }
 
         protected override void InternalCompute()
         {
-            if (this.VisitedGraph.VertexCount == 0)
+            if (VisitedGraph.VertexCount == 0)
+            {
                 return;
+            }
 
             // compute temporary values
-            int n = this.VisitedGraph.VertexCount;
-            for(int i = 0;i<this.MaxIterationCount;++i)
+            var n = VisitedGraph.VertexCount;
+            for (var i = 0; i < MaxIterationCount; ++i)
             {
-                TVertex v = RandomGraphFactory.GetVertex<TVertex, TEdge>(this.VisitedGraph, this.Rand);
-                this.dijkstra.Compute(v);
+                var v = RandomGraphFactory.GetVertex(VisitedGraph, Rand);
+                _dijkstra.Compute(v);
 
-                foreach (var u in this.VisitedGraph.Vertices)
+                foreach (var u in VisitedGraph.Vertices)
                 {
                     double d;
-                    if (this.dijkstra.TryGetDistance(u, out d))
-                        this.centralities[u] += n * d / (this.MaxIterationCount * (n - 1));
+                    if (_dijkstra.TryGetDistance(u, out d))
+                    {
+                        _centralities[u] += n * d / (MaxIterationCount * (n - 1));
+                    }
                 }
             }
 
             // update
-            foreach (var v in this.centralities.Keys)
-                this.centralities[v] = 1.0/this.centralities[v];
+            foreach (var v in _centralities.Keys)
+                _centralities[v] = 1.0 / _centralities[v];
         }
     }
 }

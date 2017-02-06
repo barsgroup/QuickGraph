@@ -1,56 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    static class HashCodeHelper
+    internal static class HashCodeHelper
     {
-        const Int32 FNV1_prime_32 = 16777619;
-        const Int32 FNV1_basis_32 = unchecked((int)2166136261);
-        const Int64 FNV1_prime_64 = 1099511628211;
-        const Int64 FNV1_basis_64 = unchecked((int)14695981039346656037);
+        private const int Fnv1Prime32 = 16777619;
 
-        public static Int32 GetHashCode(Int64 x)
-        {
-            return Combine((Int32)x, (Int32)(((UInt64)x) >> 32));
-        }
+        private const int Fnv1Basis32 = unchecked((int)2166136261);
 
-        private static Int32 Fold(Int32 hash, byte value)
-        {
-            return (hash * FNV1_prime_32) ^ (Int32)value;
-        }
+        private const long Fnv1Prime64 = 1099511628211;
 
-        private static Int32 Fold(Int32 hash, Int32 value)
-        {
-            return Fold(Fold(Fold(Fold(hash,
-                (byte)value),
-                (byte)(((UInt32)value) >> 8)),
-                (byte)(((UInt32)value) >> 16)),
-                (byte)(((UInt32)value) >> 24));
-        }
+        private const long Fnv1Basis64 = unchecked((int)14695981039346656037);
 
-        /// <summary>
-        /// Combines two hashcodes in a strong way.
-        /// </summary>
+        /// <summary>Combines two hashcodes in a strong way.</summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public static Int32 Combine(Int32 x, Int32 y)
+        public static int Combine(int x, int y)
         {
-            return Fold(Fold(FNV1_basis_32, x), y);
+            return Fold(Fold(Fnv1Basis32, x), y);
         }
 
-        /// <summary>
-        /// Combines three hashcodes in a strong way.
-        /// </summary>
+        /// <summary>Combines three hashcodes in a strong way.</summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        public static Int32 Combine(Int32 x, Int32 y, Int32 z)
+        public static int Combine(int x, int y, int z)
         {
-            return Fold(Fold(Fold(FNV1_basis_32, x), y), z);
+            return Fold(Fold(Fold(Fnv1Basis32, x), y), z);
+        }
+
+        public static int GetHashCode(long x)
+        {
+            return Combine((int)x, (int)((ulong)x >> 32));
+        }
+
+        private static int Fold(int hash, byte value)
+        {
+            return (hash * Fnv1Prime32) ^ value;
+        }
+
+        private static int Fold(int hash, int value)
+        {
+            return Fold(
+                Fold(
+                    Fold(
+                        Fold(
+                            hash,
+                            (byte)value),
+                        (byte)((uint)value >> 8)),
+                    (byte)((uint)value >> 16)),
+                (byte)((uint)value >> 24));
         }
     }
 }

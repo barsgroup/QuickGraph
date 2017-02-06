@@ -1,12 +1,20 @@
-﻿using System;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    public class NegativeWeightException 
+    using System;
+
+    public class NegativeWeightException
         : QuickGraphException
     {
-        public NegativeWeightException() { }
-        public NegativeWeightException(string message) : base(message) { }
-        public NegativeWeightException(string message, Exception inner) : base(message, inner) { }
+        public NegativeWeightException()
+        {
+        }
+
+        public NegativeWeightException(string message) : base(message)
+        {
+        }
+
+        public NegativeWeightException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 }

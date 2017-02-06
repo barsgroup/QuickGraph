@@ -1,13 +1,13 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.Observers.Contracts
+﻿namespace QuickGraph.Algorithms.Observers.Contracts
 {
-    [ContractClassFor(typeof(IObserver<>))]
-    abstract class IObserverContract<TAlgorithm>
-        : IObserver<TAlgorithm>
+    using System;
+    using System.Diagnostics.Contracts;
+
+    [ContractClassFor(typeof(Observers.IObserver<>))]
+    internal abstract class ObserverContract<TAlgorithm>
+        : Observers.IObserver<TAlgorithm>
     {
-        IDisposable IObserver<TAlgorithm>.Attach(TAlgorithm algorithm)
+        IDisposable Observers.IObserver<TAlgorithm>.Attach(TAlgorithm algorithm)
         {
             Contract.Requires(algorithm != null);
             Contract.Ensures(Contract.Result<IDisposable>() != null);

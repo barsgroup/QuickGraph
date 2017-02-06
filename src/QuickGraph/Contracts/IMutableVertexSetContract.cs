@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
     [ContractClassFor(typeof(IMutableVertexSet<>))]
-    abstract class IMutableVertexSetContract<TVertex>
+    internal abstract class MutableVertexSetContract<TVertex>
         : IMutableVertexSet<TVertex>
     {
+        #region IImplicitVertexSet<TVertex> Members
+
+        public bool ContainsVertex(TVertex vertex)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region IMutableVertexSet<TVertex> Members
 
         event VertexAction<TVertex> IMutableVertexSet<TVertex>.VertexAdded
@@ -24,7 +32,11 @@ namespace QuickGraph.Contracts
             Contract.Requires(v != null);
             Contract.Ensures(Contract.Result<bool>() == Contract.OldValue(!ithis.ContainsVertex(v)));
             Contract.Ensures(ithis.ContainsVertex(v));
-            Contract.Ensures(ithis.VertexCount == Contract.OldValue(ithis.VertexCount) + (Contract.Result<bool>() ? 1 : 0));
+            Contract.Ensures(
+                ithis.VertexCount ==
+                Contract.OldValue(ithis.VertexCount) + (Contract.Result<bool>()
+                                                            ? 1
+                                                            : 0));
 
             return default(bool);
         }
@@ -33,8 +45,8 @@ namespace QuickGraph.Contracts
         {
             IMutableVertexSet<TVertex> ithis = this;
             Contract.Requires(vertices != null);
-            Contract.Requires(Enumerable.All(vertices, v => v != null));
-            Contract.Ensures(Enumerable.All(vertices, v => ithis.ContainsVertex(v)));
+            Contract.Requires(vertices.All(v => v != null));
+            Contract.Ensures(vertices.All(v => ithis.ContainsVertex(v)));
             Contract.Ensures(ithis.VertexCount == Contract.OldValue(ithis.VertexCount) + Contract.Result<int>());
 
             return default(int);
@@ -52,7 +64,11 @@ namespace QuickGraph.Contracts
             Contract.Requires(v != null);
             Contract.Ensures(Contract.Result<bool>() == Contract.OldValue(ithis.ContainsVertex(v)));
             Contract.Ensures(!ithis.ContainsVertex(v));
-            Contract.Ensures(ithis.VertexCount == Contract.OldValue(ithis.VertexCount) - (Contract.Result<bool>() ? 1 : 0));
+            Contract.Ensures(
+                ithis.VertexCount ==
+                Contract.OldValue(ithis.VertexCount) - (Contract.Result<bool>()
+                                                            ? 1
+                                                            : 0));
 
             return default(bool);
         }
@@ -61,8 +77,8 @@ namespace QuickGraph.Contracts
         {
             IMutableVertexSet<TVertex> ithis = this;
             Contract.Requires(pred != null);
-            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(Enumerable.Count(ithis.Vertices, v => pred(v))));
-            Contract.Ensures(Enumerable.All(ithis.Vertices, v => !pred(v)));
+            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(ithis.Vertices.Count(v => pred(v))));
+            Contract.Ensures(ithis.Vertices.All(v => !pred(v)));
             Contract.Ensures(ithis.VertexCount == Contract.OldValue(ithis.VertexCount) - Contract.Result<int>());
 
             return default(int);
@@ -72,24 +88,19 @@ namespace QuickGraph.Contracts
 
         #region IVertexSet<TVertex> Members
 
-        public bool IsVerticesEmpty {
-          get { throw new NotImplementedException(); }
+        public bool IsVerticesEmpty
+        {
+            get { throw new NotImplementedException(); }
         }
 
-        public int VertexCount {
-          get { throw new NotImplementedException(); }
+        public int VertexCount
+        {
+            get { throw new NotImplementedException(); }
         }
 
-        public IEnumerable<TVertex> Vertices {
-          get { throw new NotImplementedException(); }
-        }
-
-        #endregion
-
-        #region IImplicitVertexSet<TVertex> Members
-
-        public bool ContainsVertex(TVertex vertex) {
-          throw new NotImplementedException();
+        public IEnumerable<TVertex> Vertices
+        {
+            get { throw new NotImplementedException(); }
         }
 
         #endregion

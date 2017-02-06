@@ -1,82 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.Observers
+﻿namespace QuickGraph.Algorithms.Observers
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    /// <summary></summary>
     /// <typeparam name="TVertex">type of a vertex</typeparam>
     /// <typeparam name="TEdge">type of an edge</typeparam>
     /// <reference-ref
-    ///     idref="boost"
-    ///     />
+    ///     idref="boost" />
     public sealed class EdgePredecessorRecorderObserver<TVertex, TEdge> :
         IObserver<IEdgePredecessorRecorderAlgorithm<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        private IDictionary<TEdge,TEdge> edgePredecessors;
-        private IList<TEdge> endPathEdges;
+        public IDictionary<TEdge, TEdge> EdgePredecessors { get; }
+
+        public IList<TEdge> EndPathEdges { get; }
 
         public EdgePredecessorRecorderObserver()
-            :this(new Dictionary<TEdge,TEdge>(), new List<TEdge>())
-        {}
+            : this(new Dictionary<TEdge, TEdge>(), new List<TEdge>())
+        {
+        }
 
         public EdgePredecessorRecorderObserver(
-            IDictionary<TEdge,TEdge> edgePredecessors,
+            IDictionary<TEdge, TEdge> edgePredecessors,
             IList<TEdge> endPathEdges
-            )
+        )
         {
             Contract.Requires(edgePredecessors != null);
             Contract.Requires(endPathEdges != null);
 
-            this.edgePredecessors = edgePredecessors;
-            this.endPathEdges = endPathEdges;
+            EdgePredecessors = edgePredecessors;
+            EndPathEdges = endPathEdges;
         }
 
-        public IDictionary<TEdge,TEdge> EdgePredecessors
+        public ICollection<ICollection<TEdge>> AllMergedPaths()
         {
-            get
+            var es = new List<ICollection<TEdge>>(EndPathEdges.Count);
+            IDictionary<TEdge, GraphColor> colors = new Dictionary<TEdge, GraphColor>();
+
+            foreach (var de in EdgePredecessors)
             {
-                return edgePredecessors;
+                colors[de.Key] = GraphColor.White;
+                colors[de.Value] = GraphColor.White;
             }
-        }
 
-        public IList<TEdge> EndPathEdges
-        {
-            get
-            {
-                return endPathEdges;
-            }
-        }
+            for (var i = 0; i < EndPathEdges.Count; ++i)
+                es.Add(MergedPath(EndPathEdges[i], colors));
 
-        public IDisposable Attach(IEdgePredecessorRecorderAlgorithm<TVertex, TEdge> algorithm)
-        {
-            algorithm.DiscoverTreeEdge += new EdgeEdgeAction<TVertex, TEdge>(this.DiscoverTreeEdge);
-            algorithm.FinishEdge += new EdgeAction<TVertex, TEdge>(this.FinishEdge);
-
-            return new DisposableAction(
-                () =>
-                {
-                    algorithm.DiscoverTreeEdge -= new EdgeEdgeAction<TVertex, TEdge>(this.DiscoverTreeEdge);
-                    algorithm.FinishEdge -= new EdgeAction<TVertex, TEdge>(this.FinishEdge);
-                });
-        }
-
-        public ICollection<TEdge> Path(TEdge se)
-        {
-            List<TEdge> path = new List<TEdge>();
-
-            TEdge ec = se;
-            path.Insert(0, ec);
-            while (EdgePredecessors.ContainsKey(ec))
-            {
-                TEdge e = EdgePredecessors[ec];
-                path.Insert(0, e);
-                ec = e;
-            }
-            return path;
+            return es;
         }
 
         public ICollection<ICollection<TEdge>> AllPaths()
@@ -89,26 +61,41 @@ namespace QuickGraph.Algorithms.Observers
             return es;
         }
 
-        public ICollection<TEdge> MergedPath(TEdge se, IDictionary<TEdge,GraphColor> colors)
+        public IDisposable Attach(IEdgePredecessorRecorderAlgorithm<TVertex, TEdge> algorithm)
         {
-            List<TEdge> path = new List<TEdge>();
+            algorithm.DiscoverTreeEdge += DiscoverTreeEdge;
+            algorithm.FinishEdge += FinishEdge;
 
-            TEdge ec = se;
-            GraphColor c = colors[ec];
+            return new DisposableAction(
+                () =>
+                {
+                    algorithm.DiscoverTreeEdge -= DiscoverTreeEdge;
+                    algorithm.FinishEdge -= FinishEdge;
+                });
+        }
+
+        public ICollection<TEdge> MergedPath(TEdge se, IDictionary<TEdge, GraphColor> colors)
+        {
+            var path = new List<TEdge>();
+
+            var ec = se;
+            var c = colors[ec];
             if (c != GraphColor.White)
+            {
                 return path;
-            else
-                colors[ec] = GraphColor.Black;
+            }
+            colors[ec] = GraphColor.Black;
 
             path.Insert(0, ec);
             while (EdgePredecessors.ContainsKey(ec))
             {
-                TEdge e = EdgePredecessors[ec];
+                var e = EdgePredecessors[ec];
                 c = colors[e];
                 if (c != GraphColor.White)
+                {
                     return path;
-                else
-                    colors[e] = GraphColor.Black;
+                }
+                colors[e] = GraphColor.Black;
 
                 path.Insert(0, e);
                 ec = e;
@@ -116,36 +103,38 @@ namespace QuickGraph.Algorithms.Observers
             return path;
         }
 
-        public ICollection<ICollection<TEdge>> AllMergedPaths()
+        public ICollection<TEdge> Path(TEdge se)
         {
-            List<ICollection<TEdge>> es = new List<ICollection<TEdge>>(EndPathEdges.Count);
-            IDictionary<TEdge,GraphColor> colors = new Dictionary<TEdge,GraphColor>();
+            var path = new List<TEdge>();
 
-            foreach (KeyValuePair<TEdge,TEdge> de in EdgePredecessors)
+            var ec = se;
+            path.Insert(0, ec);
+            while (EdgePredecessors.ContainsKey(ec))
             {
-                colors[de.Key] = GraphColor.White;
-                colors[de.Value] = GraphColor.White;
+                var e = EdgePredecessors[ec];
+                path.Insert(0, e);
+                ec = e;
             }
-
-            for (int i = 0; i < EndPathEdges.Count; ++i)
-                es.Add(MergedPath(EndPathEdges[i], colors));
-
-            return es;
+            return path;
         }
 
         private void DiscoverTreeEdge(TEdge edge, TEdge targetEdge)
         {
             if (!edge.Equals(targetEdge))
-                this.EdgePredecessors[targetEdge] = edge;
+            {
+                EdgePredecessors[targetEdge] = edge;
+            }
         }
 
         private void FinishEdge(TEdge args)
         {
-            foreach (var edge in this.EdgePredecessors.Values)
+            foreach (var edge in EdgePredecessors.Values)
                 if (edge.Equals(args))
+                {
                     return;
+                }
 
-            this.EndPathEdges.Add(args);
+            EndPathEdges.Add(args);
         }
     }
 }

@@ -1,54 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-
-using QuickGraph.Algorithms.Search;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.TopologicalSort
+﻿namespace QuickGraph.Algorithms.TopologicalSort
 {
-    public sealed class TopologicalSortAlgorithm<TVertex,TEdge> :
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Search;
+
+    public sealed class TopologicalSortAlgorithm<TVertex, TEdge> :
         AlgorithmBase<IVertexListGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        private IList<TVertex> vertices = new List<TVertex>();
-        private bool allowCyclicGraph = false;
+        public IList<TVertex> SortedVertices { get; private set; } = new List<TVertex>();
 
-        public TopologicalSortAlgorithm(IVertexListGraph<TVertex,TEdge> g)
-            :this(g, new List<TVertex>())
-        {}
+        public bool AllowCyclicGraph { get; } = false;
+
+        public TopologicalSortAlgorithm(IVertexListGraph<TVertex, TEdge> g)
+            : this(g, new List<TVertex>())
+        {
+        }
 
         public TopologicalSortAlgorithm(
-            IVertexListGraph<TVertex,TEdge> g, 
+            IVertexListGraph<TVertex, TEdge> g,
             IList<TVertex> vertices)
-            :base(g)
+            : base(g)
         {
             Contract.Requires(vertices != null);
 
-            this.vertices = vertices;
+            SortedVertices = vertices;
         }
 
-        public IList<TVertex> SortedVertices
+        public void Compute(IList<TVertex> vertices)
         {
-            get
-            {
-                return vertices;
-            }
-        }
-
-        public bool AllowCyclicGraph
-        {
-            get { return this.allowCyclicGraph; }
-        }
-
-        private void BackEdge(TEdge args)
-        {
-            if (!this.AllowCyclicGraph)
-                throw new NonAcyclicGraphException();
-        }
-
-        private void FinishVertex(TVertex v)
-        {
-            vertices.Insert(0, v);
+            SortedVertices = vertices;
+            SortedVertices.Clear();
+            Compute();
         }
 
         protected override void InternalCompute()
@@ -57,12 +41,12 @@ namespace QuickGraph.Algorithms.TopologicalSort
             try
             {
                 dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(
-                    this, 
-                    this.VisitedGraph,
-                    new Dictionary<TVertex, GraphColor>(this.VisitedGraph.VertexCount)
-                    );
-                dfs.BackEdge += new EdgeAction<TVertex, TEdge>(this.BackEdge);
-                dfs.FinishVertex += new VertexAction<TVertex>(this.FinishVertex);
+                    this,
+                    VisitedGraph,
+                    new Dictionary<TVertex, GraphColor>(VisitedGraph.VertexCount)
+                );
+                dfs.BackEdge += BackEdge;
+                dfs.FinishVertex += FinishVertex;
 
                 dfs.Compute();
             }
@@ -70,17 +54,23 @@ namespace QuickGraph.Algorithms.TopologicalSort
             {
                 if (dfs != null)
                 {
-                    dfs.BackEdge -= new EdgeAction<TVertex, TEdge>(this.BackEdge);
-                    dfs.FinishVertex -= new VertexAction<TVertex>(this.FinishVertex);
+                    dfs.BackEdge -= BackEdge;
+                    dfs.FinishVertex -= FinishVertex;
                 }
             }
         }
 
-        public void Compute(IList<TVertex> vertices)
+        private void BackEdge(TEdge args)
         {
-            this.vertices = vertices;
-            this.vertices.Clear();
-            this.Compute();
+            if (!AllowCyclicGraph)
+            {
+                throw new NonAcyclicGraphException();
+            }
+        }
+
+        private void FinishVertex(TVertex v)
+        {
+            SortedVertices.Insert(0, v);
         }
     }
 }

@@ -1,28 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace QuickGraph.Algorithms.RandomWalks
+﻿namespace QuickGraph.Algorithms.RandomWalks
 {
-    public sealed class RoundRobinEdgeChain<TVertex, TEdge> 
+    using System.Collections.Generic;
+    using System.Linq;
+
+    public sealed class RoundRobinEdgeChain<TVertex, TEdge>
         : IEdgeChain<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private Dictionary<TVertex, int> outEdgeIndices = new Dictionary<TVertex, int>();
+        private readonly Dictionary<TVertex, int> _outEdgeIndices = new Dictionary<TVertex, int>();
 
         public bool TryGetSuccessor(IImplicitGraph<TVertex, TEdge> g, TVertex u, out TEdge successor)
         {
-            int outDegree = g.OutDegree(u);
+            var outDegree = g.OutDegree(u);
             if (outDegree > 0)
             {
                 int index;
-                if (!outEdgeIndices.TryGetValue(u, out index))
+                if (!_outEdgeIndices.TryGetValue(u, out index))
                 {
                     index = 0;
-                    outEdgeIndices.Add(u, index);
+                    _outEdgeIndices.Add(u, index);
                 }
-                TEdge e = g.OutEdge(u, index);
-                this.outEdgeIndices[u] = (++index) % outDegree;
+                var e = g.OutEdge(u, index);
+                _outEdgeIndices[u] = ++index % outDegree;
 
                 successor = e;
                 return true;
@@ -34,18 +33,18 @@ namespace QuickGraph.Algorithms.RandomWalks
 
         public bool TryGetSuccessor(IEnumerable<TEdge> edges, TVertex u, out TEdge successor)
         {
-            var edgeCount = Enumerable.Count(edges);
+            var edgeCount = edges.Count();
 
             if (edgeCount > 0)
             {
                 int index;
-                if (!outEdgeIndices.TryGetValue(u, out index))
+                if (!_outEdgeIndices.TryGetValue(u, out index))
                 {
                     index = 0;
-                    outEdgeIndices.Add(u, index);
+                    _outEdgeIndices.Add(u, index);
                 }
-                var e = Enumerable.ElementAt(edges, index);
-                this.outEdgeIndices[u] = (++index) % edgeCount;
+                var e = edges.ElementAt(index);
+                _outEdgeIndices[u] = ++index % edgeCount;
                 successor = e;
             }
             successor = default(TEdge);

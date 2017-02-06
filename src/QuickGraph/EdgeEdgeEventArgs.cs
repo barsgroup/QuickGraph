@@ -1,11 +1,6 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// The handler for events involving two edges
-    /// </summary>
-    public delegate void EdgeEdgeAction<TVertex, TEdge>(TEdge edge, TEdge targetEdge)
+    /// <summary>The handler for events involving two edges</summary>
+    public delegate void EdgeEdgeAction<TVertex, in TEdge>(TEdge edge, TEdge targetEdge)
         where TEdge : IEdge<TVertex>;
 }

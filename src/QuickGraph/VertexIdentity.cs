@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
+    using System.Diagnostics.Contracts;
+
     [Pure]
     public delegate string VertexIdentity<TVertex>(TVertex v);
 }

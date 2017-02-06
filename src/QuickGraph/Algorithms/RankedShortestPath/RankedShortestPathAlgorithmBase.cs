@@ -1,31 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using QuickGraph.Algorithms.Services;
-using QuickGraph.Algorithms.ShortestPath;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Algorithms.RankedShortestPath
+﻿namespace QuickGraph.Algorithms.RankedShortestPath
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
+    using QuickGraph.Algorithms.Services;
+
     public abstract class RankedShortestPathAlgorithmBase<TVertex, TEdge, TGraph>
         : RootedAlgorithmBase<TVertex, TGraph>
         where TEdge : IEdge<TVertex>
         where TGraph : IGraph<TVertex, TEdge>
     {
-        private readonly IDistanceRelaxer distanceRelaxer;
-        private int shortestPathCount = 3;
-        private List<IEnumerable<TEdge>> computedShortestPaths;
+        private List<IEnumerable<TEdge>> _computedShortestPaths;
+
+        private int _shortestPathCount = 3;
 
         public int ShortestPathCount
         {
-            get { return this.shortestPathCount; }
+            get { return _shortestPathCount; }
             set
             {
                 Contract.Requires(value > 1);
-                Contract.Ensures(this.ShortestPathCount == value);
+                Contract.Ensures(ShortestPathCount == value);
 
-                this.shortestPathCount = value;
+                _shortestPathCount = value;
             }
         }
 
@@ -33,9 +31,11 @@ namespace QuickGraph.Algorithms.RankedShortestPath
         {
             get
             {
-                Contract.Ensures(Contract.Result<int>() == Enumerable.Count(this.ComputedShortestPaths));
+                Contract.Ensures(Contract.Result<int>() == ComputedShortestPaths.Count());
 
-                return this.computedShortestPaths == null ? 0 : this.computedShortestPaths.Count;
+                return _computedShortestPaths == null
+                           ? 0
+                           : _computedShortestPaths.Count;
             }
         }
 
@@ -43,43 +43,41 @@ namespace QuickGraph.Algorithms.RankedShortestPath
         {
             get
             {
-                if (this.computedShortestPaths == null)
+                if (_computedShortestPaths == null)
+                {
                     yield break;
-                else
-                    foreach (var path in this.computedShortestPaths)
-                        yield return path;
+                }
+                foreach (var path in _computedShortestPaths)
+                    yield return path;
             }
         }
 
-        protected void AddComputedShortestPath(List<TEdge> path)
-        {
-            Contract.Requires(path != null);
-            Contract.Requires(Enumerable.All(path, e => e != null));
-
-            var pathArray = path.ToArray();
-            this.computedShortestPaths.Add(pathArray);
-        }
-
-        public IDistanceRelaxer DistanceRelaxer
-        {
-            get { return this.distanceRelaxer; }
-        }
+        public IDistanceRelaxer DistanceRelaxer { get; }
 
         protected RankedShortestPathAlgorithmBase(
-            IAlgorithmComponent host, 
+            IAlgorithmComponent host,
             TGraph visitedGraph,
             IDistanceRelaxer distanceRelaxer)
             : base(host, visitedGraph)
         {
             Contract.Requires(distanceRelaxer != null);
 
-            this.distanceRelaxer = distanceRelaxer;
+            DistanceRelaxer = distanceRelaxer;
+        }
+
+        protected void AddComputedShortestPath(List<TEdge> path)
+        {
+            Contract.Requires(path != null);
+            Contract.Requires(path.All(e => e != null));
+
+            var pathArray = path.ToArray();
+            _computedShortestPaths.Add(pathArray);
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            this.computedShortestPaths = new List<IEnumerable<TEdge>>(this.ShortestPathCount);
+            _computedShortestPaths = new List<IEnumerable<TEdge>>(ShortestPathCount);
         }
     }
 }

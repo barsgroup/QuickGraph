@@ -1,7 +1,6 @@
-﻿using System;
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
-    public interface IEndPathEdgeRecorderAlgorithm<TVertex,TEdge>
+    public interface IEndPathEdgeRecorderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
     }

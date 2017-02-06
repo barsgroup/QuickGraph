@@ -1,80 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-
-namespace QuickGraph.Algorithms.Services
+﻿namespace QuickGraph.Algorithms.Services
 {
+    using System;
+    using System.Threading;
+
     public interface ICancelManager :
         IService
     {
-        /// <summary>
-        /// Raised when the cancel method is called
-        /// </summary>
-        event EventHandler CancelRequested;
-
-        /// <summary>
-        /// Requests the component to cancel its computation
-        /// </summary>
-        void Cancel();
-
-        /// <summary>
-        /// Gets a value indicating if a cancellation request is pending.
-        /// </summary>
+        /// <summary>Gets a value indicating if a cancellation request is pending.</summary>
         /// <returns></returns>
         bool IsCancelling { get; }
 
-        /// <summary>
-        /// Raised when the cancel state has been reseted
-        /// </summary>
-        event EventHandler CancelReseted;
+        /// <summary>Requests the component to cancel its computation</summary>
+        void Cancel();
 
-        /// <summary>
-        /// Resets the cancel state
-        /// </summary>
+        /// <summary>Resets the cancel state</summary>
         void ResetCancel();
+
+        /// <summary>Raised when the cancel method is called</summary>
+        event EventHandler CancelRequested;
+
+        /// <summary>Raised when the cancel state has been reseted</summary>
+        event EventHandler CancelReseted;
     }
 
-    class CancelManager :
+    internal class CancelManager :
         ICancelManager
     {
-        private int cancelling;
+        private int _cancelling;
 
-        public event EventHandler CancelRequested;
+        public bool IsCancelling => _cancelling > 0;
 
         public void Cancel()
         {
-            var value = Interlocked.Increment(ref this.cancelling);
+            var value = Interlocked.Increment(ref _cancelling);
             if (value == 0)
             {
-                var eh = this.CancelRequested;
+                var eh = CancelRequested;
                 if (eh != null)
+                {
                     eh(this, EventArgs.Empty);
+                }
             }
         }
 
-        public bool IsCancelling
-        {
-            get { return this.cancelling > 0; }
-        }
-
-        /// <summary>
-        /// Raised when the cancel state has been reseted
-        /// </summary>
-        public event EventHandler CancelReseted;
-
-        /// <summary>
-        /// Resets the cancel state
-        /// </summary>
+        /// <summary>Resets the cancel state</summary>
         public void ResetCancel()
         {
-            var value = Interlocked.Exchange(ref this.cancelling, 0);
+            var value = Interlocked.Exchange(ref _cancelling, 0);
             if (value != 0)
             {
-                var eh = this.CancelReseted;
+                var eh = CancelReseted;
                 if (eh != null)
+                {
                     eh(this, EventArgs.Empty);
+                }
             }
         }
+
+        public event EventHandler CancelRequested;
+
+        /// <summary>Raised when the cancel state has been reseted</summary>
+        public event EventHandler CancelReseted;
     }
 }

@@ -1,48 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// A delegate-based incidence graph
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
+    /// <summary>A delegate-based incidence graph</summary>
     /// <typeparam name="TVertex">type of the vertices</typeparam>
     /// <typeparam name="TEdge">type of the edges</typeparam>
     public class DelegateVertexAndEdgeListGraph<TVertex, TEdge>
         : DelegateIncidenceGraph<TVertex, TEdge>
-        , IVertexAndEdgeListGraph<TVertex, TEdge>
+          ,
+          IVertexAndEdgeListGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>, IEquatable<TEdge>
     {
-        readonly IEnumerable<TVertex> vertices;
-        int _vertexCount = -1;
-        int _edgeCount = -1;
+        private readonly IEnumerable<TVertex> _vertices;
 
-        public DelegateVertexAndEdgeListGraph(
-            IEnumerable<TVertex> vertices,
-            TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges)
-            : base(tryGetOutEdges)
-        {
-            Contract.Requires(vertices != null);
-            Contract.Requires(Enumerable.All(vertices, v =>
-            {
-                IEnumerable<TEdge> edges;
-                return tryGetOutEdges(v, out edges);
-            }));
-            this.vertices = vertices;
-        }
+        private int _edgeCount = -1;
+
+        private int _vertexCount = -1;
 
         public bool IsVerticesEmpty
         {
             get
             {
                 // shortcut if count is already computed
-                if (this._vertexCount > -1)
-                    return this._vertexCount == 0;
+                if (_vertexCount > -1)
+                {
+                    return _vertexCount == 0;
+                }
 
-                foreach (var vertex in this.vertices)
+                foreach (var vertex in _vertices)
                     return false;
                 return true;
             }
@@ -52,28 +40,29 @@ namespace QuickGraph
         {
             get
             {
-                if (this._vertexCount < 0)
-                    this._vertexCount = Enumerable.Count(this.vertices);
-                return this._vertexCount;
+                if (_vertexCount < 0)
+                {
+                    _vertexCount = _vertices.Count();
+                }
+                return _vertexCount;
             }
         }
 
-        public virtual IEnumerable<TVertex> Vertices
-        {
-            get { return this.vertices; }
-        }
+        public virtual IEnumerable<TVertex> Vertices => _vertices;
 
         public bool IsEdgesEmpty
         {
-            get 
+            get
             {
                 // shortcut if edges is already computed
-                if (this._edgeCount > -1)
-                    return this._edgeCount == 0;
+                if (_edgeCount > -1)
+                {
+                    return _edgeCount == 0;
+                }
 
-                foreach (var vertex in this.vertices)
-                    foreach (var edge in this.OutEdges(vertex))
-                        return false;
+                foreach (var vertex in _vertices)
+                foreach (var edge in OutEdges(vertex))
+                    return false;
                 return true;
             }
         }
@@ -82,9 +71,11 @@ namespace QuickGraph
         {
             get
             {
-                if (this._edgeCount < 0)
-                    this._edgeCount = Enumerable.Count(this.Edges);
-                return this._edgeCount;
+                if (_edgeCount < 0)
+                {
+                    _edgeCount = Edges.Count();
+                }
+                return _edgeCount;
             }
         }
 
@@ -92,19 +83,39 @@ namespace QuickGraph
         {
             get
             {
-                foreach (var vertex in this.vertices)
-                    foreach (var edge in this.OutEdges(vertex))
-                        yield return edge;
+                foreach (var vertex in _vertices)
+                foreach (var edge in OutEdges(vertex))
+                    yield return edge;
             }
+        }
+
+        public DelegateVertexAndEdgeListGraph(
+            IEnumerable<TVertex> vertices,
+            TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges)
+            : base(tryGetOutEdges)
+        {
+            Contract.Requires(vertices != null);
+            Contract.Requires(
+                vertices.All(
+                    v =>
+                    {
+                        IEnumerable<TEdge> edges;
+                        return tryGetOutEdges(v, out edges);
+                    }));
+            _vertices = vertices;
         }
 
         public bool ContainsEdge(TEdge edge)
         {
             IEnumerable<TEdge> edges;
-            if (this.TryGetOutEdges(edge.Source, out edges))
-                foreach(var e in edges)
+            if (TryGetOutEdges(edge.Source, out edges))
+            {
+                foreach (var e in edges)
                     if (e.Equals(edge))
+                    {
                         return true;
+                    }
+            }
             return false;
         }
     }

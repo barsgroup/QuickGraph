@@ -1,32 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-
 namespace QuickGraph.Contracts
 {
-    /// <summary>
-    /// Debug only assertions and assumptions
-    /// </summary>
+    using System.Diagnostics.Contracts;
+
+    /// <summary>Debug only assertions and assumptions</summary>
     public static class GraphContract
     {
         [Pure]
-        public static bool VertexCountEqual<TVertex>(
-            this 
-            IVertexSet<TVertex> left,
-            IVertexSet<TVertex> right)
-        {
-            Contract.Requires(left != null);
-            Contract.Requires(right != null);
-
-            return left.VertexCount == right.VertexCount;
-        }
-
-        [Pure]
         public static bool EdgeCountEqual<TVertex, TEdge>(
-            this 
-            IEdgeListGraph<TVertex, TEdge> left,
+            this
+                IEdgeListGraph<TVertex, TEdge> left,
             IEdgeListGraph<TVertex, TEdge> right)
             where TEdge : IEdge<TVertex>
         {
@@ -37,12 +19,26 @@ namespace QuickGraph.Contracts
         }
 
         [Pure]
+        public static bool InEdgeSet<TVertex, TEdge>(
+            IEdgeListGraph<TVertex, TEdge> g,
+            TEdge e)
+            where TEdge : IEdge<TVertex>
+        {
+            Contract.Requires(g != null);
+            Contract.Requires(e != null);
+
+            return InVertexSet(g, e)
+                   && g.ContainsEdge(e);
+        }
+
+        [Pure]
         public static bool InVertexSet<TVertex>(
-            IVertexSet<TVertex> g, 
+            IVertexSet<TVertex> g,
             TVertex v)
         {
             Contract.Requires(g != null);
             Contract.Requires(v != null);
+
             // todo make requires
             return g.ContainsVertex(v);
         }
@@ -56,21 +52,20 @@ namespace QuickGraph.Contracts
             Contract.Requires(g != null);
             Contract.Requires(e != null);
 
-            return InVertexSet<TVertex>(g, e.Source)
-                && InVertexSet<TVertex>(g, e.Target);
+            return InVertexSet(g, e.Source)
+                   && InVertexSet(g, e.Target);
         }
 
         [Pure]
-        public static bool InEdgeSet<TVertex, TEdge>(
-            IEdgeListGraph<TVertex, TEdge> g,
-            TEdge e)
-            where TEdge : IEdge<TVertex>
+        public static bool VertexCountEqual<TVertex>(
+            this
+                IVertexSet<TVertex> left,
+            IVertexSet<TVertex> right)
         {
-            Contract.Requires(g != null);
-            Contract.Requires(e != null);
+            Contract.Requires(left != null);
+            Contract.Requires(right != null);
 
-            return InVertexSet(g, e)
-                && g.ContainsEdge(e);
+            return left.VertexCount == right.VertexCount;
         }
     }
 }

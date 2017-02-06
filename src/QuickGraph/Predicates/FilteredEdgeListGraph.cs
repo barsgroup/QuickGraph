@@ -1,31 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-
 namespace QuickGraph.Predicates
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     public sealed class FilteredEdgeListGraph<TVertex, TEdge, TGraph>
         : FilteredImplicitVertexSet<TVertex, TEdge, TGraph>
-        , IEdgeListGraph<TVertex, TEdge>
+          ,
+          IEdgeListGraph<TVertex, TEdge>
         where TGraph : IEdgeListGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        public FilteredEdgeListGraph(
-            TGraph baseGraph,
-            VertexPredicate<TVertex> vertexPredicate,
-            EdgePredicate<TVertex, TEdge> edgePredicate
-            )
-            : base(baseGraph, vertexPredicate, edgePredicate)
-        {}
-
         public bool IsVerticesEmpty
         {
             get
             {
-                foreach (var v in this.BaseGraph.Vertices)
-                    if (this.VertexPredicate(v))
+                foreach (var v in BaseGraph.Vertices)
+                    if (VertexPredicate(v))
+                    {
                         return false;
+                    }
                 return true;
             }
         }
@@ -34,10 +27,12 @@ namespace QuickGraph.Predicates
         {
             get
             {
-                int count = 0;
-                foreach (var v in this.BaseGraph.Vertices)
-                    if (this.VertexPredicate(v))
+                var count = 0;
+                foreach (var v in BaseGraph.Vertices)
+                    if (VertexPredicate(v))
+                    {
                         count++;
+                    }
                 return count;
             }
         }
@@ -46,9 +41,11 @@ namespace QuickGraph.Predicates
         {
             get
             {
-                foreach (var v in this.BaseGraph.Vertices)
-                    if (this.VertexPredicate(v))
+                foreach (var v in BaseGraph.Vertices)
+                    if (VertexPredicate(v))
+                    {
                         yield return v;
+                    }
             }
         }
 
@@ -56,9 +53,11 @@ namespace QuickGraph.Predicates
         {
             get
             {
-                foreach (var edge in this.BaseGraph.Edges)
-                    if (this.FilterEdge(edge))
+                foreach (var edge in BaseGraph.Edges)
+                    if (FilterEdge(edge))
+                    {
                         return false;
+                    }
                 return true;
             }
         }
@@ -67,10 +66,12 @@ namespace QuickGraph.Predicates
         {
             get
             {
-                int count = 0;
-                foreach (var edge in this.BaseGraph.Edges)
-                    if (this.FilterEdge(edge))
+                var count = 0;
+                foreach (var edge in BaseGraph.Edges)
+                    if (FilterEdge(edge))
+                    {
                         count++;
+                    }
                 return count;
             }
         }
@@ -79,26 +80,37 @@ namespace QuickGraph.Predicates
         {
             get
             {
-                foreach (var edge in this.BaseGraph.Edges)
-                    if (this.FilterEdge(edge))
+                foreach (var edge in BaseGraph.Edges)
+                    if (FilterEdge(edge))
+                    {
                         yield return edge;
+                    }
             }
         }
 
-        [Pure]
-        private bool FilterEdge(TEdge edge)
+        public FilteredEdgeListGraph(
+            TGraph baseGraph,
+            VertexPredicate<TVertex> vertexPredicate,
+            EdgePredicate<TVertex, TEdge> edgePredicate
+        )
+            : base(baseGraph, vertexPredicate, edgePredicate)
         {
-            return this.VertexPredicate(edge.Source)
-                        && this.VertexPredicate(edge.Target)
-                        && this.EdgePredicate(edge);
         }
 
         [Pure]
         public bool ContainsEdge(TEdge edge)
         {
             return
-                this.FilterEdge(edge) &&
-                this.BaseGraph.ContainsEdge(edge);
+                FilterEdge(edge) &&
+                BaseGraph.ContainsEdge(edge);
+        }
+
+        [Pure]
+        private bool FilterEdge(TEdge edge)
+        {
+            return VertexPredicate(edge.Source)
+                   && VertexPredicate(edge.Target)
+                   && EdgePredicate(edge);
         }
     }
 }

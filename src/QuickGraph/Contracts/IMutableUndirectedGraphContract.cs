@@ -1,27 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
     [ContractClassFor(typeof(IMutableUndirectedGraph<,>))]
-    abstract class IMutableUndirectedGraphContract<TVertex, TEdge>
+    internal abstract class MutableUndirectedGraphContract<TVertex, TEdge>
         : IMutableUndirectedGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        #region IMutableGraph<TVertex,TEdge> Members
+
+        void IMutableGraph<TVertex, TEdge>.Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
         #region IMutableUndirectedGraph<TVertex,TEdge> Members
 
         int IMutableUndirectedGraph<TVertex, TEdge>.RemoveAdjacentEdgeIf(
-            TVertex vertex, 
+            TVertex vertex,
             EdgePredicate<TVertex, TEdge> predicate)
         {
             IMutableUndirectedGraph<TVertex, TEdge> ithis = this;
             Contract.Requires(vertex != null);
             Contract.Requires(predicate != null);
-            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(Enumerable.Count(ithis.AdjacentEdges(vertex), e => predicate(e))));
-            Contract.Ensures(Enumerable.All(ithis.AdjacentEdges(vertex), v => !predicate(v)));
+            Contract.Ensures(
+                Contract.Result<int>() ==
+                Contract.OldValue(ithis.AdjacentEdges(vertex).Count(e => predicate(e))));
+            Contract.Ensures(ithis.AdjacentEdges(vertex).All(v => !predicate(v)));
 
             return default(int);
         }
@@ -32,6 +48,7 @@ namespace QuickGraph.Contracts
             Contract.Requires(vertex != null);
             Contract.Ensures(ithis.AdjacentDegree(vertex) == 0);
         }
+
         #endregion
 
         #region IMutableEdgeListGraph<TVertex,TEdge> Members
@@ -64,15 +81,6 @@ namespace QuickGraph.Contracts
         }
 
         int IMutableEdgeListGraph<TVertex, TEdge>.RemoveEdgeIf(EdgePredicate<TVertex, TEdge> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region IMutableGraph<TVertex,TEdge> Members
-
-        void IMutableGraph<TVertex, TEdge>.Clear()
         {
             throw new NotImplementedException();
         }
@@ -178,13 +186,11 @@ namespace QuickGraph.Contracts
         #endregion
 
         #region IImplicitUndirectedGraph<TVertex,TEdge> Members
+
         [Pure]
         EdgeEqualityComparer<TVertex, TEdge> IImplicitUndirectedGraph<TVertex, TEdge>.EdgeEqualityComparer
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         IEnumerable<TEdge> IImplicitUndirectedGraph<TVertex, TEdge>.AdjacentEdges(TVertex v)
@@ -216,6 +222,7 @@ namespace QuickGraph.Contracts
         {
             throw new NotImplementedException();
         }
+
         #endregion
 
         #region IMutableVertexAndEdgeSet<TVertex,TEdge> Members
@@ -231,12 +238,5 @@ namespace QuickGraph.Contracts
         }
 
         #endregion
-
-
-        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
     }
 }

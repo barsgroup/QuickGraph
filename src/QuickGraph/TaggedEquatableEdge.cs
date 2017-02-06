@@ -1,49 +1,50 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using System.Diagnostics;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// An equatable, tagged, edge
-    /// </summary>
+    using System;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+
+    /// <summary>An equatable, tagged, edge</summary>
     /// <typeparam name="TVertex">type of the vertices</typeparam>
     /// <typeparam name="TTag"></typeparam>
     [DebuggerDisplay("{Source}->{Target}:{Tag}")]
     public class TaggedEquatableEdge<TVertex, TTag>
         : EquatableEdge<TVertex>
-        , ITagged<TTag>
+          ,
+          ITagged<TTag>
     {
-        private TTag tag;
+        private TTag _tag;
+
+        public TTag Tag
+        {
+            get { return _tag; }
+            set
+            {
+                if (!Equals(_tag, value))
+                {
+                    _tag = value;
+                    OnTagChanged(EventArgs.Empty);
+                }
+            }
+        }
 
         public TaggedEquatableEdge(TVertex source, TVertex target, TTag tag)
             : base(source, target)
         {
-            Contract.Ensures(Object.Equals(this.Tag, tag));
+            Contract.Ensures(Equals(Tag, tag));
 
-            this.tag = tag;
+            _tag = tag;
         }
-
-        public event EventHandler TagChanged;
 
         protected virtual void OnTagChanged(EventArgs e)
         {
-            var eh = this.TagChanged;
+            var eh = TagChanged;
             if (eh != null)
-                eh(this, e);
-        }
-
-        public TTag Tag
-        {
-            get { return this.tag; }
-            set
             {
-                if (!object.Equals(this.tag, value))
-                {
-                    this.tag = value;
-                    this.OnTagChanged(EventArgs.Empty);
-                }
+                eh(this, e);
             }
         }
+
+        public event EventHandler TagChanged;
     }
 }

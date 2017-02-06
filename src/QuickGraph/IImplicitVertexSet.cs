@@ -1,22 +1,18 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using QuickGraph.Contracts;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// An implicit set of vertices
-    /// </summary>
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Contracts;
+
+    /// <summary>An implicit set of vertices</summary>
     /// <typeparam name="TVertex">type of the vertices</typeparam>
-    [ContractClass(typeof(IImplicitVertexSetContract<>))]
+    [ContractClass(typeof(ImplicitVertexSetContract<>))]
     public interface IImplicitVertexSet<TVertex>
     {
-        /// <summary>
-        /// Determines whether the specified vertex contains vertex.
-        /// </summary>
+        /// <summary>Determines whether the specified vertex contains vertex.</summary>
         /// <param name="vertex">The vertex.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified vertex contains vertex; otherwise, <c>false</c>.
+        ///     <c>true</c> if the specified vertex contains vertex; otherwise, <c>false</c>.
         /// </returns>
         [Pure]
         bool ContainsVertex(TVertex vertex);

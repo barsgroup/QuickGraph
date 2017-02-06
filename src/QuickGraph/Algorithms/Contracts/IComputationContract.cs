@@ -1,13 +1,14 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.Contracts
+﻿namespace QuickGraph.Algorithms.Contracts
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IComputation))]
-    abstract class IComputationContract
+    internal abstract class ComputationContract
         : IComputation
     {
         #region IComputation Members
+
         object IComputation.SyncRoot
         {
             get
@@ -19,7 +20,7 @@ namespace QuickGraph.Algorithms.Contracts
 
         ComputationState IComputation.State
         {
-            get 
+            get
             {
                 Contract.Ensures(Enum.IsDefined(typeof(ComputationState), Contract.Result<ComputationState>()));
 

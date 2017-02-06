@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
     [ContractClassFor(typeof(IVertexSet<>))]
-    abstract class IVertexSetContract<TVertex>
+    internal abstract class VertexSetContract<TVertex>
         : IVertexSet<TVertex>
     {
         bool IVertexSet<TVertex>.IsVerticesEmpty
         {
-            get 
+            get
             {
                 IVertexSet<TVertex> ithis = this;
                 Contract.Ensures(Contract.Result<bool>() == (ithis.VertexCount == 0));
@@ -26,7 +25,7 @@ namespace QuickGraph.Contracts
             get
             {
                 IVertexSet<TVertex> ithis = this;
-                Contract.Ensures(Contract.Result<int>() == Enumerable.Count(ithis.Vertices));
+                Contract.Ensures(Contract.Result<int>() == ithis.Vertices.Count());
 
                 return default(int);
             }
@@ -34,7 +33,7 @@ namespace QuickGraph.Contracts
 
         IEnumerable<TVertex> IVertexSet<TVertex>.Vertices
         {
-            get 
+            get
             {
                 Contract.Ensures(Contract.Result<IEnumerable<TVertex>>() != null);
 
@@ -44,8 +43,9 @@ namespace QuickGraph.Contracts
 
         #region IImplicitVertexSet<TVertex> Members
 
-        public bool ContainsVertex(TVertex vertex) {
-          throw new NotImplementedException();
+        public bool ContainsVertex(TVertex vertex)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

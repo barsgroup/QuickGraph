@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Predicates
+﻿namespace QuickGraph.Predicates
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     public sealed class InDictionaryVertexPredicate<TVertex, TValue>
     {
-        private readonly IDictionary<TVertex, TValue> dictionary;
+        private readonly IDictionary<TVertex, TValue> _dictionary;
 
         public InDictionaryVertexPredicate(
-            IDictionary<TVertex,TValue> dictionary)
+            IDictionary<TVertex, TValue> dictionary)
         {
             Contract.Requires(dictionary != null);
-            this.dictionary = dictionary;
+            _dictionary = dictionary;
         }
 
         [Pure]
@@ -20,7 +19,7 @@ namespace QuickGraph.Predicates
         {
             Contract.Requires(v != null);
 
-            return this.dictionary.ContainsKey(v);
+            return _dictionary.ContainsKey(v);
         }
     }
 }

@@ -1,42 +1,45 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    public class TaggedEdge<TVertex,TTag> 
+    using System;
+    using System.Diagnostics.Contracts;
+
+    public class TaggedEdge<TVertex, TTag>
         : Edge<TVertex>
-        , ITagged<TTag>
+          ,
+          ITagged<TTag>
     {
-        private TTag tag;
-
-        public TaggedEdge(TVertex source, TVertex target, TTag tag)
-            :base(source,target)
-        {
-            Contract.Ensures(Object.Equals(this.Tag,tag));
-
-            this.tag = tag;
-        }
-
-        public event EventHandler TagChanged;
-
-        protected virtual void OnTagChanged(EventArgs e)
-        {
-            var eh = this.TagChanged;
-            if (eh != null)
-                eh(this, e);
-        }
+        private TTag _tag;
 
         public TTag Tag
         {
-            get { return this.tag; }
-            set 
+            get { return _tag; }
+            set
             {
-                if (!object.Equals(this.tag, value))
+                if (!Equals(_tag, value))
                 {
-                    this.tag = value;
-                    this.OnTagChanged(EventArgs.Empty);
+                    _tag = value;
+                    OnTagChanged(EventArgs.Empty);
                 }
             }
         }
+
+        public TaggedEdge(TVertex source, TVertex target, TTag tag)
+            : base(source, target)
+        {
+            Contract.Ensures(Equals(Tag, tag));
+
+            _tag = tag;
+        }
+
+        protected virtual void OnTagChanged(EventArgs e)
+        {
+            var eh = TagChanged;
+            if (eh != null)
+            {
+                eh(this, e);
+            }
+        }
+
+        public event EventHandler TagChanged;
     }
 }

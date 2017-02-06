@@ -1,53 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-namespace QuickGraph.Predicates
+﻿namespace QuickGraph.Predicates
 {
-    public class FilteredVertexListGraph<TVertex, TEdge, Graph> 
-        : FilteredIncidenceGraph<TVertex,TEdge,Graph>
-        , IVertexListGraph<TVertex,TEdge>
-        where TEdge : IEdge<TVertex>
-        where Graph : IVertexListGraph<TVertex,TEdge>
-    {
-        public FilteredVertexListGraph(
-            Graph baseGraph,
-            VertexPredicate<TVertex> vertexPredicate,
-            EdgePredicate<TVertex, TEdge> edgePredicate
-            )
-            :base(baseGraph,vertexPredicate,edgePredicate)
-        { }
+    using System.Collections.Generic;
 
+    public class FilteredVertexListGraph<TVertex, TEdge, TGraph>
+        : FilteredIncidenceGraph<TVertex, TEdge, TGraph>
+          ,
+          IVertexListGraph<TVertex, TEdge>
+        where TEdge : IEdge<TVertex>
+        where TGraph : IVertexListGraph<TVertex, TEdge>
+    {
         public bool IsVerticesEmpty
         {
-            get 
+            get
             {
-                foreach (var v in this.BaseGraph.Vertices)
-                    if (this.VertexPredicate(v))
+                foreach (var v in BaseGraph.Vertices)
+                    if (VertexPredicate(v))
+                    {
                         return false;
+                    }
                 return true;
             }
         }
 
         public int VertexCount
         {
-            get 
+            get
             {
-                int count = 0;
-                foreach (var v in this.BaseGraph.Vertices)
-                    if (this.VertexPredicate(v))
+                var count = 0;
+                foreach (var v in BaseGraph.Vertices)
+                    if (VertexPredicate(v))
+                    {
                         count++;
+                    }
                 return count;
             }
         }
 
         public IEnumerable<TVertex> Vertices
         {
-            get 
+            get
             {
-                foreach (var v in this.BaseGraph.Vertices)
-                    if (this.VertexPredicate(v))
+                foreach (var v in BaseGraph.Vertices)
+                    if (VertexPredicate(v))
+                    {
                         yield return v;
+                    }
             }
+        }
+
+        public FilteredVertexListGraph(
+            TGraph baseGraph,
+            VertexPredicate<TVertex> vertexPredicate,
+            EdgePredicate<TVertex, TEdge> edgePredicate
+        )
+            : base(baseGraph, vertexPredicate, edgePredicate)
+        {
         }
     }
 }

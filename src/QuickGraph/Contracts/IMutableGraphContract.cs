@@ -1,20 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IMutableGraph<,>))]
-    abstract class IMutableGraphContract<TVertex, TEdge>
+    internal abstract class MutableGraphContract<TVertex, TEdge>
         : IMutableGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         #region IMutableGraph<TVertex,TEdge> Members
+
         void IMutableGraph<TVertex, TEdge>.Clear()
         {
             IMutableGraph<TVertex, TEdge> ithis = this;
         }
+
         #endregion
+
+        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
 
         #region IGraph<TVertex,TEdge> Members
 
@@ -29,12 +36,5 @@ namespace QuickGraph.Contracts
         }
 
         #endregion
-
-
-        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
     }
 }

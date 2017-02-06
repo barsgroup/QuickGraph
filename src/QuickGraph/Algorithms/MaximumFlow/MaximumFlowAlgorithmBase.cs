@@ -1,88 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using QuickGraph.Algorithms.Services;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.MaximumFlow
+﻿namespace QuickGraph.Algorithms.MaximumFlow
 {
-    /// <summary>
-    /// Abstract base class for maximum flow algorithms.
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Services;
+
+    /// <summary>Abstract base class for maximum flow algorithms.</summary>
     public abstract class MaximumFlowAlgorithm<TVertex, TEdge> :
         AlgorithmBase<IMutableVertexAndEdgeListGraph<TVertex, TEdge>>,
-        IVertexColorizerAlgorithm<TVertex,TEdge>
+        IVertexColorizerAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private TVertex source;
-        private TVertex sink;
+        private TVertex _sink;
+
+        private TVertex _source;
 
         protected MaximumFlowAlgorithm(
             IAlgorithmComponent host,
             IMutableVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> capacities,
             EdgeFactory<TVertex, TEdge> edgeFactory
-            )
+        )
             : base(host, visitedGraph)
         {
             Contract.Requires(capacities != null);
-            
-            this.Capacities = capacities;
-            this.Predecessors = new Dictionary<TVertex, TEdge>();
-            this.EdgeFactory = edgeFactory;
-            this.ResidualCapacities = new Dictionary<TEdge, double>();
-            this.VertexColors = new Dictionary<TVertex, GraphColor>();
+
+            Capacities = capacities;
+            Predecessors = new Dictionary<TVertex, TEdge>();
+            EdgeFactory = edgeFactory;
+            ResidualCapacities = new Dictionary<TEdge, double>();
+            VertexColors = new Dictionary<TVertex, GraphColor>();
+        }
+
+        public double Compute(TVertex source, TVertex sink)
+        {
+            Source = source;
+            Sink = sink;
+            Compute();
+            return MaxFlow;
         }
 
         #region Properties
 
-        public Dictionary<TVertex,TEdge> Predecessors { get; private set; }
+        public Dictionary<TVertex, TEdge> Predecessors { get; private set; }
 
-        public Func<TEdge,double> Capacities { get; private set; }
-       
-        public Dictionary<TEdge,double> ResidualCapacities { get; private set; }
+        public Func<TEdge, double> Capacities { get; private set; }
+
+        public Dictionary<TEdge, double> ResidualCapacities { get; private set; }
 
         public EdgeFactory<TVertex, TEdge> EdgeFactory { get; private set; }
 
         public Dictionary<TEdge, TEdge> ReversedEdges { get; protected set; }
 
-        public Dictionary<TVertex,GraphColor> VertexColors { get; private set; }
+        public Dictionary<TVertex, GraphColor> VertexColors { get; }
 
         public GraphColor GetVertexColor(TVertex vertex)
         {
-            return this.VertexColors[vertex];
+            return VertexColors[vertex];
         }
 
         public TVertex Source
         {
-            get { return this.source; }
-            set 
+            get { return _source; }
+            set
             {
                 Contract.Requires(value != null);
-                this.source = value; 
+                _source = value;
             }
         }
 
         public TVertex Sink
         {
-            get { return this.sink; }
-            set 
+            get { return _sink; }
+            set
             {
                 Contract.Requires(value != null);
-                this.sink = value; 
+                _sink = value;
             }
         }
 
         public double MaxFlow { get; set; }
 
         #endregion
-
-        public double Compute(TVertex source, TVertex sink)
-        {
-            this.Source = source;
-            this.Sink = sink;
-            this.Compute();
-            return this.MaxFlow;
-        }
     }
-
 }

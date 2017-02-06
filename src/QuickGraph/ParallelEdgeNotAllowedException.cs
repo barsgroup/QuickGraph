@@ -1,12 +1,20 @@
-﻿using System;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    public class ParallelEdgeNotAllowedException 
+    using System;
+
+    public class ParallelEdgeNotAllowedException
         : QuickGraphException
     {
-        public ParallelEdgeNotAllowedException() { }
-        public ParallelEdgeNotAllowedException(string message) : base( message ) { }
-        public ParallelEdgeNotAllowedException(string message, System.Exception inner) : base( message, inner ) { }
+        public ParallelEdgeNotAllowedException()
+        {
+        }
+
+        public ParallelEdgeNotAllowedException(string message) : base(message)
+        {
+        }
+
+        public ParallelEdgeNotAllowedException(string message, Exception inner) : base(message, inner)
+        {
+        }
     }
 }

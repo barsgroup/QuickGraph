@@ -1,93 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-
-using QuickGraph.Algorithms.Observers;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.RandomWalks
+﻿namespace QuickGraph.Algorithms.RandomWalks
 {
-    public sealed class RandomWalkAlgorithm<TVertex, TEdge> 
-        : ITreeBuilderAlgorithm<TVertex,TEdge>
+    using System.Diagnostics.Contracts;
+
+    public sealed class RandomWalkAlgorithm<TVertex, TEdge>
+        : ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private IImplicitGraph<TVertex,TEdge> visitedGraph;
-        private EdgePredicate<TVertex,TEdge> endPredicate;
-        private IEdgeChain<TVertex,TEdge> edgeChain;
+        private IEdgeChain<TVertex, TEdge> _edgeChain;
 
-        public RandomWalkAlgorithm(IImplicitGraph<TVertex,TEdge> visitedGraph)
-            :this(visitedGraph,new NormalizedMarkovEdgeChain<TVertex,TEdge>())
-        {}
+        public IImplicitGraph<TVertex, TEdge> VisitedGraph { get; }
 
-        public RandomWalkAlgorithm(
-            IImplicitGraph<TVertex,TEdge> visitedGraph,
-            IEdgeChain<TVertex,TEdge> edgeChain
-            )
+        public IEdgeChain<TVertex, TEdge> EdgeChain
         {
-            Contract.Requires(visitedGraph != null);
-            Contract.Requires(edgeChain != null);
-
-            this.visitedGraph = visitedGraph;
-            this.edgeChain = edgeChain;
-        }
-
-        public IImplicitGraph<TVertex,TEdge> VisitedGraph
-        {
-            get
-            {
-                return this.visitedGraph;
-            }
-        }
-
-        public IEdgeChain<TVertex,TEdge> EdgeChain
-        {
-            get
-            {
-                return this.edgeChain;
-            }
+            get { return _edgeChain; }
             set
             {
                 Contract.Requires(value != null);
 
-                this.edgeChain = value;
+                _edgeChain = value;
             }
         }
 
-        public EdgePredicate<TVertex,TEdge> EndPredicate
+        public EdgePredicate<TVertex, TEdge> EndPredicate { get; set; }
+
+        public RandomWalkAlgorithm(IImplicitGraph<TVertex, TEdge> visitedGraph)
+            : this(visitedGraph, new NormalizedMarkovEdgeChain<TVertex, TEdge>())
         {
-            get
-            {
-                return this.endPredicate;
-            }
-            set
-            {
-                this.endPredicate = value;
-            }
         }
 
-        public event VertexAction<TVertex> StartVertex;
-        private void OnStartVertex(TVertex v)
+        public RandomWalkAlgorithm(
+            IImplicitGraph<TVertex, TEdge> visitedGraph,
+            IEdgeChain<TVertex, TEdge> edgeChain
+        )
         {
-            if (StartVertex != null)
-                StartVertex(v);
-        }
+            Contract.Requires(visitedGraph != null);
+            Contract.Requires(edgeChain != null);
 
-        public event VertexAction<TVertex> EndVertex;
-        private void OnEndVertex(TVertex v)
-        {
-            if (EndVertex != null)
-                EndVertex(v);
-        }
-
-        public event EdgeAction<TVertex,TEdge> TreeEdge;
-        private void OnTreeEdge(TEdge e)
-        {
-            if (this.TreeEdge != null)
-                this.TreeEdge(e);
-        }
-
-        private bool TryGetSuccessor(TVertex u, out TEdge successor)
-        {
-            return this.EdgeChain.TryGetSuccessor(this.VisitedGraph, u, out successor);
+            VisitedGraph = visitedGraph;
+            _edgeChain = edgeChain;
         }
 
         public void Generate(TVertex root)
@@ -101,26 +51,66 @@ namespace QuickGraph.Algorithms.RandomWalks
         {
             Contract.Requires(root != null);
 
-            int count = 0;
-            TEdge e = default(TEdge);
-            TVertex v = root;
+            var count = 0;
+            var e = default(TEdge);
+            var v = root;
 
             OnStartVertex(root);
-            while (count < walkCount && this.TryGetSuccessor(v, out e))
+            while (count < walkCount && TryGetSuccessor(v, out e))
             {
                 // if dead end stop
-                if (e==null)
+                if (e == null)
+                {
                     break;
+                }
+
                 // if end predicate, test
-                if (this.endPredicate != null && this.endPredicate(e))
+                if (EndPredicate != null && EndPredicate(e))
+                {
                     break;
+                }
                 OnTreeEdge(e);
                 v = e.Target;
+
                 // upgrade count
                 ++count;
             }
             OnEndVertex(v);
         }
 
+        private void OnEndVertex(TVertex v)
+        {
+            if (EndVertex != null)
+            {
+                EndVertex(v);
+            }
+        }
+
+        private void OnStartVertex(TVertex v)
+        {
+            if (StartVertex != null)
+            {
+                StartVertex(v);
+            }
+        }
+
+        private void OnTreeEdge(TEdge e)
+        {
+            if (TreeEdge != null)
+            {
+                TreeEdge(e);
+            }
+        }
+
+        private bool TryGetSuccessor(TVertex u, out TEdge successor)
+        {
+            return EdgeChain.TryGetSuccessor(VisitedGraph, u, out successor);
+        }
+
+        public event VertexAction<TVertex> EndVertex;
+
+        public event VertexAction<TVertex> StartVertex;
+
+        public event EdgeAction<TVertex, TEdge> TreeEdge;
     }
 }

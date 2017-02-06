@@ -1,15 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IMutableVertexListGraph<,>))]
-    abstract class IMutableVertexListGraphContract<TVertex, TEdge>
+    internal abstract class MutableVertexListGraphContract<TVertex, TEdge>
         : IMutableVertexListGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        #region IMutableGraph<TVertex,TEdge> Members
+
+        void IMutableGraph<TVertex, TEdge>.Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
         #region IMutableIncidenceGraph<TVertex,TEdge> Members
 
         int IMutableIncidenceGraph<TVertex, TEdge>.RemoveOutEdgeIf(TVertex v, EdgePredicate<TVertex, TEdge> predicate)
@@ -23,15 +37,6 @@ namespace QuickGraph.Contracts
         }
 
         void IMutableIncidenceGraph<TVertex, TEdge>.TrimEdgeExcess()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region IMutableGraph<TVertex,TEdge> Members
-
-        void IMutableGraph<TVertex, TEdge>.Clear()
         {
             throw new NotImplementedException();
         }
@@ -159,11 +164,5 @@ namespace QuickGraph.Contracts
         }
 
         #endregion
-
-        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
     }
 }

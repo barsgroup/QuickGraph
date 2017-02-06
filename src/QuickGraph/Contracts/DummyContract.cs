@@ -1,10 +1,7 @@
-﻿using System;
-
-namespace System.Diagnostics.Contracts
+﻿namespace System.Diagnostics.Contracts
 {
-    /// <summary>
-    /// Ensures that System.Diagnostics.Contracts namespace exists 
-    /// </summary>
-    class DummyContract
-    {}
+    /// <summary>Ensures that System.Diagnostics.Contracts namespace exists</summary>
+    internal class DummyContract
+    {
+    }
 }

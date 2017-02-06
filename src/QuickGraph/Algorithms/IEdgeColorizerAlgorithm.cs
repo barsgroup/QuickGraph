@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
-    public interface IEdgeColorizerAlgorithm<TVertex,TEdge>
+    using System.Collections.Generic;
+
+    public interface IEdgeColorizerAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        IDictionary<TEdge, GraphColor> EdgeColors { get;}
+        IDictionary<TEdge, GraphColor> EdgeColors { get; }
     }
 }

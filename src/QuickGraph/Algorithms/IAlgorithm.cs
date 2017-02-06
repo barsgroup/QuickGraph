@@ -1,13 +1,13 @@
-﻿using System;
-using QuickGraph.Algorithms.Services;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
-   [ContractClass(typeof(Contracts.IAlgorithmContract<>))]
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Contracts;
+
+    [ContractClass(typeof(AlgorithmContract<>))]
     public interface IAlgorithm<TGraph> :
         IComputation
     {
-        TGraph VisitedGraph { get;}
+        TGraph VisitedGraph { get; }
     }
 }

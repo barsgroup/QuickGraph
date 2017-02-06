@@ -1,62 +1,124 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+
     [DebuggerDisplay("VertexCount = {VertexCount}, EdgeCount = {EdgeCount}")]
-    public sealed class ReversedBidirectionalGraph<TVertex, TEdge> : 
-        IBidirectionalGraph<TVertex,SReversedEdge<TVertex,TEdge>>
+    public sealed class ReversedBidirectionalGraph<TVertex, TEdge> :
+        IBidirectionalGraph<TVertex, SReversedEdge<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        private readonly IBidirectionalGraph<TVertex,TEdge> originalGraph;
-        public ReversedBidirectionalGraph(IBidirectionalGraph<TVertex,TEdge> originalGraph)
+        public IBidirectionalGraph<TVertex, TEdge> OriginalGraph { get; }
+
+        public bool IsVerticesEmpty => OriginalGraph.IsVerticesEmpty;
+
+        public bool IsDirected => OriginalGraph.IsDirected;
+
+        public bool AllowParallelEdges => OriginalGraph.AllowParallelEdges;
+
+        public int VertexCount => OriginalGraph.VertexCount;
+
+        public IEnumerable<TVertex> Vertices => OriginalGraph.Vertices;
+
+        public IEnumerable<SReversedEdge<TVertex, TEdge>> Edges
+        {
+            get
+            {
+                foreach (var edge in OriginalGraph.Edges)
+                    yield return new SReversedEdge<TVertex, TEdge>(edge);
+            }
+        }
+
+        public bool IsEdgesEmpty => OriginalGraph.IsEdgesEmpty;
+
+        public int EdgeCount => OriginalGraph.EdgeCount;
+
+        public ReversedBidirectionalGraph(IBidirectionalGraph<TVertex, TEdge> originalGraph)
         {
             Contract.Requires(originalGraph != null);
-            this.originalGraph = originalGraph;
+            OriginalGraph = originalGraph;
         }
 
-        public IBidirectionalGraph<TVertex,TEdge> OriginalGraph
+        public bool ContainsEdge(TVertex source, TVertex target)
         {
-            get { return this.originalGraph;}
-        }
-    
-        public bool  IsVerticesEmpty
-        {
-        	get { return this.OriginalGraph.IsVerticesEmpty; }
+            return OriginalGraph.ContainsEdge(target, source);
         }
 
-        public bool IsDirected
+        [Pure]
+        public bool ContainsEdge(SReversedEdge<TVertex, TEdge> edge)
         {
-            get { return this.OriginalGraph.IsDirected; }
-        }
-
-        public bool AllowParallelEdges
-        {
-            get { return this.OriginalGraph.AllowParallelEdges; }
-        }
-
-        public int  VertexCount
-        {
-        	get { return this.OriginalGraph.VertexCount; }
-        }
-
-        public IEnumerable<TVertex> Vertices
-        {
-        	get { return this.OriginalGraph.Vertices; }
+            return OriginalGraph.ContainsEdge(edge.OriginalEdge);
         }
 
         [Pure]
         public bool ContainsVertex(TVertex vertex)
         {
-            return this.OriginalGraph.ContainsVertex(vertex);
-        }   
+            return OriginalGraph.ContainsVertex(vertex);
+        }
 
-        public bool ContainsEdge(TVertex source, TVertex target)
+        [Pure]
+        public int Degree(TVertex v)
         {
-            return this.OriginalGraph.ContainsEdge(target,source);
+            return OriginalGraph.Degree(v);
+        }
+
+        [Pure]
+        public int InDegree(TVertex v)
+        {
+            return OriginalGraph.OutDegree(v);
+        }
+
+        [Pure]
+        public SReversedEdge<TVertex, TEdge> InEdge(TVertex v, int index)
+        {
+            var edge = OriginalGraph.OutEdge(v, index);
+            if (edge == null)
+            {
+                return default(SReversedEdge<TVertex, TEdge>);
+            }
+            return new SReversedEdge<TVertex, TEdge>(edge);
+        }
+
+        [Pure]
+        public IEnumerable<SReversedEdge<TVertex, TEdge>> InEdges(TVertex v)
+        {
+            return EdgeExtensions.ReverseEdges<TVertex, TEdge>(OriginalGraph.OutEdges(v));
+        }
+
+        [Pure]
+        public bool IsInEdgesEmpty(TVertex v)
+        {
+            return OriginalGraph.IsOutEdgesEmpty(v);
+        }
+
+        [Pure]
+        public bool IsOutEdgesEmpty(TVertex v)
+        {
+            return OriginalGraph.IsInEdgesEmpty(v);
+        }
+
+        [Pure]
+        public int OutDegree(TVertex v)
+        {
+            return OriginalGraph.InDegree(v);
+        }
+
+        [Pure]
+        public SReversedEdge<TVertex, TEdge> OutEdge(TVertex v, int index)
+        {
+            var edge = OriginalGraph.InEdge(v, index);
+            if (edge == null)
+            {
+                return default(SReversedEdge<TVertex, TEdge>);
+            }
+            return new SReversedEdge<TVertex, TEdge>(edge);
+        }
+
+        [Pure]
+        public IEnumerable<SReversedEdge<TVertex, TEdge>> OutEdges(TVertex v)
+        {
+            return EdgeExtensions.ReverseEdges<TVertex, TEdge>(OriginalGraph.InEdges(v));
         }
 
         public bool TryGetEdge(
@@ -65,155 +127,57 @@ namespace QuickGraph
             out SReversedEdge<TVertex, TEdge> edge)
         {
             TEdge oedge;
-            if (this.OriginalGraph.TryGetEdge(target, source, out oedge))
+            if (OriginalGraph.TryGetEdge(target, source, out oedge))
             {
                 edge = new SReversedEdge<TVertex, TEdge>(oedge);
                 return true;
             }
-            else
-            {
-                edge = default(SReversedEdge<TVertex, TEdge>);
-                return false;
-            }
+            edge = default(SReversedEdge<TVertex, TEdge>);
+            return false;
         }
 
         public bool TryGetEdges(
             TVertex source,
             TVertex target,
-            out IEnumerable<SReversedEdge<TVertex,TEdge>> edges)
+            out IEnumerable<SReversedEdge<TVertex, TEdge>> edges)
         {
             IEnumerable<TEdge> oedges;
-            if (this.OriginalGraph.TryGetEdges(target, source, out oedges))
+            if (OriginalGraph.TryGetEdges(target, source, out oedges))
             {
-                List<SReversedEdge<TVertex, TEdge>> list = new List<SReversedEdge<TVertex, TEdge>>();
+                var list = new List<SReversedEdge<TVertex, TEdge>>();
                 foreach (var oedge in oedges)
                     list.Add(new SReversedEdge<TVertex, TEdge>(oedge));
                 edges = list;
                 return true;
             }
-            else
-            {
-                edges = null;
-                return false;
-            }
-        }
-
-        [Pure]
-        public bool IsOutEdgesEmpty(TVertex v)
-        {
-            return this.OriginalGraph.IsInEdgesEmpty(v);
-        }
-
-        [Pure]
-        public int OutDegree(TVertex v)
-        {
-            return this.OriginalGraph.InDegree(v);
-        }
-
-        [Pure]
-        public IEnumerable<SReversedEdge<TVertex, TEdge>> InEdges(TVertex v)
-        {
-            return EdgeExtensions.ReverseEdges<TVertex, TEdge>(this.OriginalGraph.OutEdges(v));
-        }
-
-        [Pure]
-        public SReversedEdge<TVertex, TEdge> InEdge(TVertex v, int index)
-        {
-            TEdge edge = this.OriginalGraph.OutEdge(v, index);
-            if (edge == null)
-                return default(SReversedEdge<TVertex,TEdge>);
-            return new SReversedEdge<TVertex, TEdge>(edge);
-        }
-
-        [Pure]
-        public bool IsInEdgesEmpty(TVertex v)
-        {
-            return this.OriginalGraph.IsOutEdgesEmpty(v);
-        }
-
-        [Pure]
-        public int InDegree(TVertex v)
-        {
-            return this.OriginalGraph.OutDegree(v);
-        }
-
-        [Pure]
-        public IEnumerable<SReversedEdge<TVertex, TEdge>> OutEdges(TVertex v)
-        {
-            return EdgeExtensions.ReverseEdges<TVertex, TEdge>(this.OriginalGraph.InEdges(v));
+            edges = null;
+            return false;
         }
 
         [Pure]
         public bool TryGetInEdges(TVertex v, out IEnumerable<SReversedEdge<TVertex, TEdge>> edges)
         {
             IEnumerable<TEdge> outEdges;
-            if (this.OriginalGraph.TryGetOutEdges(v, out outEdges))
+            if (OriginalGraph.TryGetOutEdges(v, out outEdges))
             {
                 edges = EdgeExtensions.ReverseEdges<TVertex, TEdge>(outEdges);
                 return true;
             }
-            else
-            {
-                edges = null;
-                return false;
-            }
-
+            edges = null;
+            return false;
         }
 
         [Pure]
         public bool TryGetOutEdges(TVertex v, out IEnumerable<SReversedEdge<TVertex, TEdge>> edges)
         {
             IEnumerable<TEdge> inEdges;
-            if (this.OriginalGraph.TryGetInEdges(v, out inEdges))
+            if (OriginalGraph.TryGetInEdges(v, out inEdges))
             {
                 edges = EdgeExtensions.ReverseEdges<TVertex, TEdge>(inEdges);
                 return true;
             }
-            else
-            {
-                edges = null;
-                return false;
-            }
-        }
-
-        [Pure]
-        public SReversedEdge<TVertex, TEdge> OutEdge(TVertex v, int index)
-        {
-            TEdge edge = this.OriginalGraph.InEdge(v, index);
-            if (edge == null)
-                return default(SReversedEdge<TVertex,TEdge>);
-            return new SReversedEdge<TVertex, TEdge>(edge);
-        }
-
-        public IEnumerable<SReversedEdge<TVertex,TEdge>>  Edges
-        {
-        	get 
-            {
-                foreach(TEdge edge in this.OriginalGraph.Edges)
-                    yield return new SReversedEdge<TVertex,TEdge>(edge);
-            }
-        }
-
-        [Pure]
-        public bool ContainsEdge(SReversedEdge<TVertex, TEdge> edge)
-        {
-            return this.OriginalGraph.ContainsEdge(edge.OriginalEdge);
-        }
-
-        [Pure]
-        public int Degree(TVertex v)
-        {
-            return this.OriginalGraph.Degree(v);
-        }
-
-        public bool IsEdgesEmpty
-        {
-            get { return this.OriginalGraph.IsEdgesEmpty; }
-        }
-
-        public int EdgeCount
-        {
-            get { return this.OriginalGraph.EdgeCount; }
+            edges = null;
+            return false;
         }
     }
 }

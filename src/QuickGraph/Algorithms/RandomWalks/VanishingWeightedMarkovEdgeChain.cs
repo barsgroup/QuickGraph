@@ -1,56 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-namespace QuickGraph.Algorithms.RandomWalks
+﻿namespace QuickGraph.Algorithms.RandomWalks
 {
+    using System.Collections.Generic;
+
     public sealed class VanishingWeightedMarkovEdgeChain<TVertex, TEdge> :
-        WeightedMarkovEdgeChainBase<TVertex,TEdge>
+        WeightedMarkovEdgeChainBase<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-		private double factor;
+        public double Factor { get; set; }
 
-		public VanishingWeightedMarkovEdgeChain(IDictionary<TEdge,double> weights)
-            :this(weights,0.2)
-        {}
+        public VanishingWeightedMarkovEdgeChain(IDictionary<TEdge, double> weights)
+            : this(weights, 0.2)
+        {
+        }
 
-		public VanishingWeightedMarkovEdgeChain(IDictionary<TEdge,double> weights, double factor)
-			:base(weights)
-		{
-			this.factor = factor;
-		}
+        public VanishingWeightedMarkovEdgeChain(IDictionary<TEdge, double> weights, double factor)
+            : base(weights)
+        {
+            Factor = factor;
+        }
 
-		public double Factor
-		{
-			get
-			{
-				return this.factor;
-			}
-            set 
-            {
-                this.factor = value;
-            }
-		}
-
-        public override bool TryGetSuccessor(IImplicitGraph<TVertex,TEdge> g, TVertex u, out TEdge successor)
+        public override bool TryGetSuccessor(IImplicitGraph<TVertex, TEdge> g, TVertex u, out TEdge successor)
         {
             if (!g.IsOutEdgesEmpty(u))
             {
                 // get outweight
-                double outWeight = GetOutWeight(g, u);
+                var outWeight = GetOutWeight(g, u);
+
                 // get succesor
                 TEdge s;
-                if (this.TryGetSuccessor(g, u, this.Rand.NextDouble() * outWeight, out s))
+                if (TryGetSuccessor(g, u, Rand.NextDouble() * outWeight, out s))
                 {
                     // update probabilities
-                    this.Weights[s] *= this.Factor;
+                    Weights[s] *= Factor;
 
                     // normalize
-                    foreach (TEdge e in g.OutEdges(u))
-                    {
-                        checked
-                        {
-                            this.Weights[e] /= outWeight;
-                        }
-                    }
+                    foreach (var e in g.OutEdges(u))
+                        Weights[e] /= outWeight;
 
                     successor = s;
                     return true;
@@ -59,28 +44,23 @@ namespace QuickGraph.Algorithms.RandomWalks
 
             successor = default(TEdge);
             return false;
-		}
+        }
 
         public override bool TryGetSuccessor(IEnumerable<TEdge> edges, TVertex u, out TEdge successor)
         {
             // get outweight
-            double outWeight = this.GetWeights(edges);
+            var outWeight = GetWeights(edges);
+
             // get succesor
             TEdge s;
-            if (this.TryGetSuccessor(edges, this.Rand.NextDouble() * outWeight, out s))
+            if (TryGetSuccessor(edges, Rand.NextDouble() * outWeight, out s))
             {
                 // update probabilities
-                this.Weights[s] *= this.Factor;
+                Weights[s] *= Factor;
 
                 // normalize
                 foreach (var e in edges)
-                {
-                    checked
-                    {
-                        this.Weights[e] /= outWeight;
-                    }
-                }
-
+                    Weights[e] /= outWeight;
 
                 successor = s;
                 return true;

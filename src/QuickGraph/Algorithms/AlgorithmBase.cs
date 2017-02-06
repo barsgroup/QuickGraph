@@ -1,180 +1,102 @@
-﻿using System;
-using QuickGraph.Algorithms.Services;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Services;
+
     public abstract class AlgorithmBase<TGraph> :
         IAlgorithm<TGraph>,
         IAlgorithmComponent
     {
-        private readonly TGraph visitedGraph;
         private readonly AlgorithmServices services;
-        private volatile object syncRoot = new object();
-        private volatile ComputationState state = ComputationState.NotRunning;
 
-        /// <summary>
-        /// Creates a new algorithm with an (optional) host.
-        /// </summary>
+        private Dictionary<Type, object> _services;
+
+        private volatile ComputationState _state = ComputationState.NotRunning;
+
+        private volatile object _syncRoot = new object();
+
+        public TGraph VisitedGraph { get; }
+
+        public object SyncRoot => _syncRoot;
+
+        public ComputationState State
+        {
+            get
+            {
+                lock (_syncRoot)
+                {
+                    return _state;
+                }
+            }
+        }
+
+        public IAlgorithmServices Services => services;
+
+        /// <summary>Creates a new algorithm with an (optional) host.</summary>
         /// <param name="host">if null, host is set to the this reference</param>
         /// <param name="visitedGraph"></param>
         protected AlgorithmBase(IAlgorithmComponent host, TGraph visitedGraph)
         {
             Contract.Requires(visitedGraph != null);
             if (host == null)
+            {
                 host = this;
-            this.visitedGraph = visitedGraph;
-            this.services = new AlgorithmServices(host);
+            }
+            VisitedGraph = visitedGraph;
+            services = new AlgorithmServices(host);
         }
 
         protected AlgorithmBase(TGraph visitedGraph)
         {
             Contract.Requires(visitedGraph != null);
-            this.visitedGraph = visitedGraph;
-            this.services = new AlgorithmServices(this);
+            VisitedGraph = visitedGraph;
+            services = new AlgorithmServices(this);
         }
 
-        public TGraph VisitedGraph
+        public void Abort()
         {
-            get { return this.visitedGraph; }
-        }
-
-        public IAlgorithmServices Services
-        {
-            get { return this.services; }
-        }
-
-        public Object SyncRoot
-        {
-            get { return this.syncRoot; }
-        }
-
-        public ComputationState State
-        {
-            get
+            var raise = false;
+            lock (_syncRoot)
             {
-                lock (this.syncRoot)
+                if (_state == ComputationState.Running)
                 {
-                    return this.state;
+                    _state = ComputationState.PendingAbortion;
+                    Services.CancelManager.Cancel();
+                    raise = true;
                 }
+            }
+            if (raise)
+            {
+                OnStateChanged(EventArgs.Empty);
             }
         }
 
         public void Compute()
         {
-            this.BeginComputation();
-            this.Initialize();
+            BeginComputation();
+            Initialize();
             try
             {
-                this.InternalCompute();
+                InternalCompute();
             }
             finally
             {
-                this.Clean();
+                Clean();
             }
-            this.EndComputation();
-        }
-
-        protected virtual void Initialize()
-        { }
-
-        protected virtual void Clean()
-        { }
-
-        protected abstract void InternalCompute();
-
-        public void Abort()
-        {
-            bool raise = false;
-            lock (this.syncRoot)
-            {
-                if (this.state == ComputationState.Running)
-                {
-                    this.state = ComputationState.PendingAbortion;
-                    this.Services.CancelManager.Cancel();
-                    raise = true;
-                }
-            }
-            if (raise)
-                this.OnStateChanged(EventArgs.Empty);
-        }
-
-        public event EventHandler StateChanged;
-        protected virtual void OnStateChanged(EventArgs e)
-        {
-            EventHandler eh = this.StateChanged;
-            if (eh!=null)
-                eh(this, e);
-        }
-
-        public event EventHandler Started;
-        protected virtual void OnStarted(EventArgs e)
-        {
-            EventHandler eh = this.Started;
-            if (eh != null)
-                eh(this, e);
-        }
-
-        public event EventHandler Finished;
-        protected virtual void OnFinished(EventArgs e)
-        {
-            EventHandler eh = this.Finished;
-            if (eh != null)
-                eh(this, e);
-        }
-
-        public event EventHandler Aborted;
-        protected virtual void OnAborted(EventArgs e)
-        {
-            EventHandler eh = this.Aborted;
-            if (eh != null)
-                eh(this, e);
-        }
-
-        protected void BeginComputation()
-        {
-            Contract.Requires(this.State == ComputationState.NotRunning);
-            lock (this.syncRoot)
-            {
-                this.state = ComputationState.Running;
-                this.Services.CancelManager.ResetCancel();
-                this.OnStarted(EventArgs.Empty);
-                this.OnStateChanged(EventArgs.Empty);
-            }
-        }
-
-        protected void EndComputation()
-        {
-            Contract.Requires(
-                this.State == ComputationState.Running || 
-                this.State == ComputationState.Aborted);
-            lock (this.syncRoot)
-            {
-                switch (this.state)
-                {
-                    case ComputationState.Running:
-                        this.state = ComputationState.Finished;
-                        this.OnFinished(EventArgs.Empty);
-                        break;
-                    case ComputationState.PendingAbortion:
-                        this.state = ComputationState.Aborted;
-                        this.OnAborted(EventArgs.Empty);
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
-                this.Services.CancelManager.ResetCancel();
-                this.OnStateChanged(EventArgs.Empty);
-            }
+            EndComputation();
         }
 
         public T GetService<T>()
             where T : IService
         {
             T service;
-            if (!this.TryGetService<T>(out service))
+            if (!TryGetService(out service))
+            {
                 throw new InvalidOperationException("service not found");
+            }
             return service;
         }
 
@@ -182,7 +104,7 @@ namespace QuickGraph.Algorithms
             where T : IService
         {
             object serviceObject;
-            if (this.TryGetService(typeof(T), out serviceObject))
+            if (TryGetService(typeof(T), out serviceObject))
             {
                 service = (T)serviceObject;
                 return true;
@@ -192,25 +114,120 @@ namespace QuickGraph.Algorithms
             return false;
         }
 
-        Dictionary<Type, object> _services;
+        protected void BeginComputation()
+        {
+            Contract.Requires(State == ComputationState.NotRunning);
+            lock (_syncRoot)
+            {
+                _state = ComputationState.Running;
+                Services.CancelManager.ResetCancel();
+                OnStarted(EventArgs.Empty);
+                OnStateChanged(EventArgs.Empty);
+            }
+        }
+
+        protected virtual void Clean()
+        {
+        }
+
+        protected void EndComputation()
+        {
+            Contract.Requires(
+                State == ComputationState.Running ||
+                State == ComputationState.Aborted);
+            lock (_syncRoot)
+            {
+                switch (_state)
+                {
+                    case ComputationState.Running:
+                        _state = ComputationState.Finished;
+                        OnFinished(EventArgs.Empty);
+                        break;
+                    case ComputationState.PendingAbortion:
+                        _state = ComputationState.Aborted;
+                        OnAborted(EventArgs.Empty);
+                        break;
+                    default:
+                        throw new InvalidOperationException();
+                }
+                Services.CancelManager.ResetCancel();
+                OnStateChanged(EventArgs.Empty);
+            }
+        }
+
+        protected virtual void Initialize()
+        {
+        }
+
+        protected abstract void InternalCompute();
+
+        protected virtual void OnAborted(EventArgs e)
+        {
+            var eh = Aborted;
+            if (eh != null)
+            {
+                eh(this, e);
+            }
+        }
+
+        protected virtual void OnFinished(EventArgs e)
+        {
+            var eh = Finished;
+            if (eh != null)
+            {
+                eh(this, e);
+            }
+        }
+
+        protected virtual void OnStarted(EventArgs e)
+        {
+            var eh = Started;
+            if (eh != null)
+            {
+                eh(this, e);
+            }
+        }
+
+        protected virtual void OnStateChanged(EventArgs e)
+        {
+            var eh = StateChanged;
+            if (eh != null)
+            {
+                eh(this, e);
+            }
+        }
+
         protected virtual bool TryGetService(Type serviceType, out object service)
         {
             Contract.Requires(serviceType != null);
-            lock (this.SyncRoot)
+            lock (SyncRoot)
             {
-                if (this._services == null)
-                    this._services = new Dictionary<Type, object>();
-                if (!this._services.TryGetValue(serviceType, out service))
+                if (_services == null)
+                {
+                    _services = new Dictionary<Type, object>();
+                }
+                if (!_services.TryGetValue(serviceType, out service))
                 {
                     if (serviceType == typeof(ICancelManager))
-                        this._services[serviceType] = service = new CancelManager();
+                    {
+                        _services[serviceType] = service = new CancelManager();
+                    }
                     else
-                        this._services[serviceType] = service = null;
+                    {
+                        _services[serviceType] = service = null;
+                    }
                 }
 
                 return service != null;
-
             }
         }
+
+        public event EventHandler Aborted;
+
+        public event EventHandler Finished;
+
+        public event EventHandler Started;
+
+        public event EventHandler StateChanged;
     }
 }

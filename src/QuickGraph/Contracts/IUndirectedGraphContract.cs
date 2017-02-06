@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IUndirectedGraph<,>))]
-    abstract class IUndirectedGraphContract<TVertex, TEdge>
+    internal abstract class UndirectedGraphContract<TVertex, TEdge>
         : IUndirectedGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
@@ -74,13 +72,11 @@ namespace QuickGraph.Contracts
         #endregion
 
         #region IImplicitUndirectedGraph<TVertex,TEdge> Members
+
         [Pure]
         EdgeEqualityComparer<TVertex, TEdge> IImplicitUndirectedGraph<TVertex, TEdge>.EdgeEqualityComparer
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
         }
 
         IEnumerable<TEdge> IImplicitUndirectedGraph<TVertex, TEdge>.AdjacentEdges(TVertex v)
@@ -112,6 +108,7 @@ namespace QuickGraph.Contracts
         {
             throw new NotImplementedException();
         }
+
         #endregion
     }
 }

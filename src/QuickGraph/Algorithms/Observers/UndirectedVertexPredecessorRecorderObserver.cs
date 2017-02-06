@@ -1,56 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.Observers
+﻿namespace QuickGraph.Algorithms.Observers
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    /// <summary></summary>
     /// <typeparam name="TVertex">type of a vertex</typeparam>
     /// <typeparam name="TEdge">type of an edge</typeparam>
     /// <reference-ref
-    ///     idref="boost"
-    ///     />
+    ///     idref="boost" />
     public sealed class UndirectedVertexPredecessorRecorderObserver<TVertex, TEdge> :
         IObserver<IUndirectedTreeBuilderAlgorithm<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        private readonly IDictionary<TVertex, TEdge> vertexPredecessors;
+        public IDictionary<TVertex, TEdge> VertexPredecessors { get; }
 
         public UndirectedVertexPredecessorRecorderObserver()
-            :this(new Dictionary<TVertex,TEdge>())
-        {}
+            : this(new Dictionary<TVertex, TEdge>())
+        {
+        }
 
         public UndirectedVertexPredecessorRecorderObserver(
             IDictionary<TVertex, TEdge> vertexPredecessors)
         {
             Contract.Requires(vertexPredecessors != null);
 
-            this.vertexPredecessors = vertexPredecessors;
-        }
-
-        public IDictionary<TVertex, TEdge> VertexPredecessors
-        {
-            get { return this.vertexPredecessors; }
+            VertexPredecessors = vertexPredecessors;
         }
 
         public IDisposable Attach(IUndirectedTreeBuilderAlgorithm<TVertex, TEdge> algorithm)
         {
-            algorithm.TreeEdge += new UndirectedEdgeAction<TVertex, TEdge>(TreeEdge);
+            algorithm.TreeEdge += TreeEdge;
             return new DisposableAction(
-                () => algorithm.TreeEdge -= new UndirectedEdgeAction<TVertex, TEdge>(TreeEdge)
-                );
-        }
-
-        void TreeEdge(Object sender, UndirectedEdgeEventArgs<TVertex,TEdge> e)
-        {
-            this.vertexPredecessors[e.Target] = e.Edge;
+                () => algorithm.TreeEdge -= TreeEdge
+            );
         }
 
         public bool TryGetPath(TVertex vertex, out IEnumerable<TEdge> path)
         {
-            return EdgeExtensions.TryGetPath(this.VertexPredecessors, vertex, out path);
+            return VertexPredecessors.TryGetPath(vertex, out path);
+        }
+
+        private void TreeEdge(object sender, UndirectedEdgeEventArgs<TVertex, TEdge> e)
+        {
+            VertexPredecessors[e.Target] = e.Edge;
         }
     }
 }

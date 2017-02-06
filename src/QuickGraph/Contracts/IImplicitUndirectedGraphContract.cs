@@ -1,17 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+
     [ContractClassFor(typeof(IImplicitUndirectedGraph<,>))]
-    abstract class IImplicitUndirectedGraphContract<TVertex, TEdge> 
+    internal abstract class ImplicitUndirectedGraphContract<TVertex, TEdge>
         : IImplicitUndirectedGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        #region IImplicitVertexSet<TVertex> Members
+
+        bool IImplicitVertexSet<TVertex>.ContainsVertex(TVertex vertex)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region IImplicitUndirectedGraph<TVertex,TEdge> Members
+
         [Pure]
         EdgeEqualityComparer<TVertex, TEdge> IImplicitUndirectedGraph<TVertex, TEdge>.EdgeEqualityComparer
         {
@@ -30,14 +39,13 @@ namespace QuickGraph.Contracts
             Contract.Requires(ithis.ContainsVertex(v));
             Contract.Ensures(Contract.Result<IEnumerable<TEdge>>() != null);
             Contract.Ensures(
-                Enumerable.All(
-                    Contract.Result<IEnumerable<TEdge>>(),
-                    edge => 
-                        edge != null && 
-                        ithis.ContainsEdge(edge.Source, edge.Target) && 
+                Contract.Result<IEnumerable<TEdge>>().All(
+                    edge =>
+                        edge != null &&
+                        ithis.ContainsEdge(edge.Source, edge.Target) &&
                         (edge.Source.Equals(v) || edge.Target.Equals(v))
-                    )
-                );
+                )
+            );
 
             return default(IEnumerable<TEdge>);
         }
@@ -48,7 +56,7 @@ namespace QuickGraph.Contracts
             IImplicitUndirectedGraph<TVertex, TEdge> ithis = this;
             Contract.Requires(v != null);
             Contract.Requires(ithis.ContainsVertex(v));
-            Contract.Ensures(Contract.Result<int>() == Enumerable.Count(ithis.AdjacentEdges(v)));
+            Contract.Ensures(Contract.Result<int>() == ithis.AdjacentEdges(v).Count());
 
             return default(int);
         }
@@ -95,27 +103,25 @@ namespace QuickGraph.Contracts
             IImplicitUndirectedGraph<TVertex, TEdge> ithis = this;
             Contract.Requires(source != null);
             Contract.Requires(target != null);
-            Contract.Ensures(Contract.Result<bool>() == Enumerable.Any(ithis.AdjacentEdges(source), e => e.Target.Equals(target) || e.Source.Equals(target)));
+            Contract.Ensures(
+                Contract.Result<bool>() ==
+                ithis.AdjacentEdges(source).Any(e => e.Target.Equals(target) || e.Source.Equals(target)));
 
             return default(bool);
         }
-        #endregion
 
-        #region IImplicitVertexSet<TVertex> Members
-        bool IImplicitVertexSet<TVertex>.ContainsVertex(TVertex vertex)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
 
         #region IGraph<TVertex,TEdge> Members
 
-        public bool IsDirected {
-          get { throw new NotImplementedException(); }
+        public bool IsDirected
+        {
+            get { throw new NotImplementedException(); }
         }
 
-        public bool AllowParallelEdges {
-          get { throw new NotImplementedException(); }
+        public bool AllowParallelEdges
+        {
+            get { throw new NotImplementedException(); }
         }
 
         #endregion

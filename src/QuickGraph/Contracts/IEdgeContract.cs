@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IEdge<>))]
-    abstract class IEdgeContract<TVertex>
+    internal abstract class EdgeContract<TVertex>
         : IEdge<TVertex>
     {
-        [ContractInvariantMethod]
-        void IEdgeInvariant()
-        {
-            IEdge<TVertex> ithis = this;
-            Contract.Invariant(ithis.Source != null);
-            Contract.Invariant(ithis.Target != null);
-        }
-
         TVertex IEdge<TVertex>.Source
         {
             get
@@ -32,6 +22,14 @@ namespace QuickGraph.Contracts
                 Contract.Ensures(Contract.Result<TVertex>() != null);
                 return default(TVertex);
             }
+        }
+
+        [ContractInvariantMethod]
+        private void EdgeInvariant()
+        {
+            IEdge<TVertex> ithis = this;
+            Contract.Invariant(ithis.Source != null);
+            Contract.Invariant(ithis.Target != null);
         }
     }
 }

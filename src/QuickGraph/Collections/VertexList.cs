@@ -1,24 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using QuickGraph.Clonable;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
+    using System.Collections.Generic;
+
+    using QuickGraph.Clonable;
+
     public sealed class VertexList<TVertex>
         : List<TVertex>
-        , ICloneable
+          ,
+          ICloneable
     {
         public VertexList()
-        { }
+        {
+        }
 
         public VertexList(int capacity)
             : base(capacity)
-        { }
+        {
+        }
 
         public VertexList(VertexList<TVertex> other)
             : base(other)
-        { }
+        {
+        }
 
         public VertexList<TVertex> Clone()
         {
@@ -27,7 +30,7 @@ namespace QuickGraph.Collections
 
         object ICloneable.Clone()
         {
-            return this.Clone();
+            return Clone();
         }
     }
 }

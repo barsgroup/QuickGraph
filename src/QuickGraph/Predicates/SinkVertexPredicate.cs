@@ -1,23 +1,22 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Predicates
+﻿namespace QuickGraph.Predicates
 {
+    using System.Diagnostics.Contracts;
+
     public sealed class SinkVertexPredicate<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private readonly IIncidenceGraph<TVertex, TEdge> visitedGraph;
+        private readonly IIncidenceGraph<TVertex, TEdge> _visitedGraph;
 
         public SinkVertexPredicate(IIncidenceGraph<TVertex, TEdge> visitedGraph)
         {
             Contract.Requires(visitedGraph != null);
 
-            this.visitedGraph = visitedGraph;
+            _visitedGraph = visitedGraph;
         }
 
         public bool Test(TVertex v)
         {
-            return this.visitedGraph.IsOutEdgesEmpty(v);
+            return _visitedGraph.IsOutEdgesEmpty(v);
         }
     }
 }

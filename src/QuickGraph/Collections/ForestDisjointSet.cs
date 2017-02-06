@@ -1,126 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Diagnostics;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
-    /// <summary>
-    /// Disjoint-set implementation with path compression and union-by-rank optimizations.
-    /// optimization
-    /// </summary>
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+
+    /// <summary>Disjoint-set implementation with path compression and union-by-rank optimizations. optimization</summary>
     /// <typeparam name="T"></typeparam>
     public class ForestDisjointSet<T>
         : IDisjointSet<T>
     {
-#if DEBUG
-        [DebuggerDisplay("{ID}:{Rank}->{Parent}")]
-#endif
-        class Element
-        {
-#if DEBUG
-            public readonly int ID;
-            static int nextID;
-#endif
-            public Element Parent;
-            public int Rank;
-            public readonly T Value;
-            public Element(T value)
-            {
-#if DEBUG
-                this.ID = nextID++;
-#endif
-                this.Parent = null;
-                this.Rank = 0;
-                this.Value = value;
-            }
-        }
+        private readonly Dictionary<T, Element> _elements;
 
-        readonly Dictionary<T, Element> elements;
-        int setCount;
+        public int SetCount { get; private set; }
+
+        public int ElementCount => _elements.Count;
 
         public ForestDisjointSet(int elementCapacity)
         {
             Contract.Requires(elementCapacity >= 0 && elementCapacity < int.MaxValue);
-            this.elements = new Dictionary<T, Element>(elementCapacity);
-            this.setCount = 0;
+            _elements = new Dictionary<T, Element>(elementCapacity);
+            SetCount = 0;
         }
 
         public ForestDisjointSet()
         {
-            this.elements = new Dictionary<T, Element>();
-            this.setCount = 0;
+            _elements = new Dictionary<T, Element>();
+            SetCount = 0;
         }
 
-        public int SetCount
+        public bool AreInSameSet(T left, T right)
         {
-            get { return this.setCount; }
-        }
-
-        public int ElementCount
-        {
-            get { return this.elements.Count; }
-        }
-
-        /// <summary>
-        /// Adds a new set
-        /// </summary>
-        /// <param name="value"></param>
-        public void MakeSet(T value)
-        {
-            var element = new Element(value);
-            this.elements.Add(value, element);
-            this.setCount++;
+            return FindSet(left).Equals(FindSet(right));
         }
 
         [Pure]
         public bool Contains(T value)
         {
-            return this.elements.ContainsKey(value);
-        }
-
-        public bool Union(T left, T right)
-        {
-            return this.Union(this.elements[left], this.elements[right]);
+            return _elements.ContainsKey(value);
         }
 
         public T FindSet(T value)
         {
-            return this.Find(this.elements[value]).Value;
+            return Find(_elements[value]).Value;
         }
 
-        public bool AreInSameSet(T left, T right)
+        /// <summary>Adds a new set</summary>
+        /// <param name="value"></param>
+        public void MakeSet(T value)
         {
-            return this.FindSet(left).Equals(this.FindSet(right));
+            var element = new Element(value);
+            _elements.Add(value, element);
+            SetCount++;
         }
 
-        [Pure]
-        private Element FindNoCompression(Element element)
+        public bool Union(T left, T right)
         {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<Element>() != null);
-
-            // find root,
-            var current = element;
-            while (current.Parent != null)
-                current = current.Parent;
-
-            return current;
-        }
-
-        /// <summary>
-        /// Finds the parent element, and applies path compression
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        private Element Find(Element element)
-        {
-            Contract.Requires(element != null);
-            Contract.Ensures(Contract.Result<Element>() != null);
-
-            var root = this.FindNoCompression(element);            
-            CompressPath(element, root);
-            return root;
+            return Union(_elements[left], _elements[right]);
         }
 
         private static void CompressPath(Element element, Element root)
@@ -138,44 +73,108 @@ namespace QuickGraph.Collections
             }
         }
 
+        /// <summary>Finds the parent element, and applies path compression</summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        private Element Find(Element element)
+        {
+            Contract.Requires(element != null);
+            Contract.Ensures(Contract.Result<Element>() != null);
+
+            var root = FindNoCompression(element);
+            CompressPath(element, root);
+            return root;
+        }
+
+        [Pure]
+        private Element FindNoCompression(Element element)
+        {
+            Contract.Requires(element != null);
+            Contract.Ensures(Contract.Result<Element>() != null);
+
+            // find root,
+            var current = element;
+            while (current.Parent != null)
+                current = current.Parent;
+
+            return current;
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(SetCount >= 0);
+            Contract.Invariant(SetCount <= _elements.Count);
+        }
+
         private bool Union(Element left, Element right)
         {
             Contract.Requires(left != null);
             Contract.Requires(right != null);
             Contract.Ensures(
-                Contract.Result<bool>() 
-                ? Contract.OldValue(this.SetCount) - 1 == this.SetCount             
-                : Contract.OldValue(this.SetCount) == this.SetCount);
-            Contract.Ensures(this.FindNoCompression(left) == this.FindNoCompression(right));
+                Contract.Result<bool>()
+                    ? Contract.OldValue(SetCount) - 1 == SetCount
+                    : Contract.OldValue(SetCount) == SetCount);
+            Contract.Ensures(FindNoCompression(left) == FindNoCompression(right));
 
             // shortcut when already unioned,
-            if (left == right) return false;
+            if (left == right)
+            {
+                return false;
+            }
 
             var leftRoot = Find(left);
             var rightRoot = Find(right);
 
             // union by rank
             if (leftRoot.Rank > rightRoot.Rank)
+            {
                 rightRoot.Parent = leftRoot;
+            }
             else if (leftRoot.Rank < rightRoot.Rank)
+            {
                 leftRoot.Parent = rightRoot;
+            }
             else if (leftRoot != rightRoot)
             {
                 rightRoot.Parent = leftRoot;
                 leftRoot.Rank = leftRoot.Rank + 1;
             }
             else
+            {
                 return false; // do not update the setcount
+            }
 
-            this.setCount--;
+            SetCount--;
             return true;
         }
 
-        [ContractInvariantMethod]
-        void ObjectInvariant()
+#if DEBUG
+        [DebuggerDisplay("{Id}:{Rank}->{Parent}")]
+#endif
+        private class Element
         {
-            Contract.Invariant(this.setCount >= 0);
-            Contract.Invariant(this.setCount <= this.elements.Count);
+            public readonly T Value;
+
+            public Element Parent;
+
+            public int Rank;
+
+            public Element(T value)
+            {
+#if DEBUG
+                Id = _nextId++;
+#endif
+                Parent = null;
+                Rank = 0;
+                Value = value;
+            }
+
+#if DEBUG
+            public readonly int Id;
+
+            private static int _nextId;
+#endif
         }
     }
 }

@@ -1,14 +1,25 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IEdgeListGraph<,>))]
-    abstract class IEdgeListGraphContract<TVertex, TEdge>
+    internal abstract class EdgeListGraphContract<TVertex, TEdge>
         : IEdgeListGraph<TVertex, TEdge>
-      where TEdge : IEdge<TVertex>  
+        where TEdge : IEdge<TVertex>
     {
+        #region IImplicitVertexSet<TVertex> Members
+
+        public bool ContainsVertex(TVertex vertex)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region IGraph<TVertex,TEdge> Members
+
         bool IGraph<TVertex, TEdge>.IsDirected
         {
             get { throw new NotImplementedException(); }
@@ -33,7 +44,7 @@ namespace QuickGraph.Contracts
             get { throw new NotImplementedException(); }
         }
 
-        System.Collections.Generic.IEnumerable<TEdge> IEdgeSet<TVertex, TEdge>.Edges
+        IEnumerable<TEdge> IEdgeSet<TVertex, TEdge>.Edges
         {
             get { throw new NotImplementedException(); }
         }
@@ -42,28 +53,24 @@ namespace QuickGraph.Contracts
         {
             throw new NotImplementedException();
         }
+
         #endregion
 
         #region IVertexSet<TVertex> Members
 
-        public bool IsVerticesEmpty {
-          get { throw new NotImplementedException(); }
+        public bool IsVerticesEmpty
+        {
+            get { throw new NotImplementedException(); }
         }
 
-        public int VertexCount {
-          get { throw new NotImplementedException(); }
+        public int VertexCount
+        {
+            get { throw new NotImplementedException(); }
         }
 
-        public System.Collections.Generic.IEnumerable<TVertex> Vertices {
-          get { throw new NotImplementedException(); }
-        }
-
-        #endregion
-
-        #region IImplicitVertexSet<TVertex> Members
-
-        public bool ContainsVertex(TVertex vertex) {
-          throw new NotImplementedException();
+        public IEnumerable<TVertex> Vertices
+        {
+            get { throw new NotImplementedException(); }
         }
 
         #endregion

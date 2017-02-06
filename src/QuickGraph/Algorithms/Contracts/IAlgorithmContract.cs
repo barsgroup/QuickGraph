@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.Contracts
+﻿namespace QuickGraph.Algorithms.Contracts
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IAlgorithm<>))]
-    abstract class IAlgorithmContract<TGraph>
+    internal abstract class AlgorithmContract<TGraph>
         : IAlgorithm<TGraph>
     {
         #region IAlgorithm<TGraph> Members
 
         TGraph IAlgorithm<TGraph>.VisitedGraph
         {
-            get 
+            get
             {
                 Contract.Ensures(Contract.Result<TGraph>() != null);
 

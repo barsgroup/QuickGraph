@@ -1,20 +1,16 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     public abstract class VertexEventArgs<TVertex> : EventArgs
     {
-        private readonly TVertex vertex;
+        public TVertex Vertex { get; }
+
         protected VertexEventArgs(TVertex vertex)
         {
             Contract.Requires(vertex != null);
-            this.vertex = vertex;
-        }
-
-        public TVertex Vertex
-        {
-            get { return this.vertex; }
+            Vertex = vertex;
         }
     }
 

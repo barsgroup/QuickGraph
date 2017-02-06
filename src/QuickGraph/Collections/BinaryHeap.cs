@@ -1,86 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Collections;
-using System.Diagnostics.Contracts;
-using System.Linq;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
-    /// <summary>
-    /// Binary heap
-    /// </summary>
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+
+    /// <summary>Binary heap</summary>
     /// <remarks>
-    /// Indexing rules:
-    /// 
-    /// parent index: index ¡ 1)/2
-    /// left child: 2 * index + 1
-    /// right child: 2 * index + 2
-    /// 
-    /// Reference:
-    /// http://dotnetslackers.com/Community/files/folders/data-structures-and-algorithms/entry28722.aspx
+    ///     Indexing rules: parent index: index ¡ 1)/2 left child: 2 * index + 1 right child: 2 * index + 2 Reference:
+    ///     http://dotnetslackers.com/Community/files/folders/data-structures-and-algorithms/entry28722.aspx
     /// </remarks>
     /// <typeparam name="TValue">type of the value</typeparam>
     /// <typeparam name="TPriority">type of the priority metric</typeparam>
     [DebuggerDisplay("Count = {Count}")]
-    public class BinaryHeap<TPriority, TValue> 
+    public class BinaryHeap<TPriority, TValue>
         : IEnumerable<KeyValuePair<TPriority, TValue>>
     {
-        readonly Func<TPriority, TPriority, int> priorityComparsion;
-        KeyValuePair<TPriority, TValue>[] items;
-        int count;
-        int version;
+        private KeyValuePair<TPriority, TValue>[] _items;
 
-        const int DefaultCapacity = 16;
+        private int _version;
+
+        private const int DefaultCapacity = 16;
 
         public BinaryHeap()
             : this(DefaultCapacity, Comparer<TPriority>.Default.Compare)
-        { }
+        {
+        }
 
         public BinaryHeap(Func<TPriority, TPriority, int> priorityComparison)
             : this(DefaultCapacity, priorityComparison)
-        { }
+        {
+        }
 
         public BinaryHeap(int capacity, Func<TPriority, TPriority, int> priorityComparison)
         {
             Contract.Requires(capacity >= 0);
             Contract.Requires(priorityComparison != null);
 
-            this.items = new KeyValuePair<TPriority, TValue>[capacity];
-            this.priorityComparsion = priorityComparison;
+            _items = new KeyValuePair<TPriority, TValue>[capacity];
+            PriorityComparison = priorityComparison;
         }
 
-        public Func<TPriority, TPriority, int> PriorityComparison
-        {
-            get { return this.priorityComparsion; }
-        }
+        public Func<TPriority, TPriority, int> PriorityComparison { get; }
 
-        public int Capacity
-        {
-            get { return this.items.Length; }
-        }
+        public int Capacity => _items.Length;
 
-        public int Count
-        {
-            get { return this.count; }
-        }
+        public int Count { get; private set; }
 
         public void Add(TPriority priority, TValue value)
         {
-            this.version++;
-            this.ResizeArray();
-            this.items[this.count++] = new KeyValuePair<TPriority, TValue>(priority, value);
-            this.MinHeapifyDown(this.count - 1);
+            _version++;
+            ResizeArray();
+            _items[Count++] = new KeyValuePair<TPriority, TValue>(priority, value);
+            MinHeapifyDown(Count - 1);
         }
 
         private void MinHeapifyDown(int start)
         {
-            int i = start;
-            int j = (i - 1) / 2;
+            var i = start;
+            var j = (i - 1) / 2;
             while (i > 0 &&
-                this.Less(i, j))
+                   Less(i, j))
             {
-                this.Swap(i, j);
+                Swap(i, j);
                 i = j;
                 j = (i - 1) / 2;
             }
@@ -88,59 +71,68 @@ namespace QuickGraph.Collections
 
         public TValue[] ToValueArray()
         {
-            var values = new TValue[this.items.Length];
-            for (int i = 0; i < values.Length; ++i)
-                values[i] = this.items[i].Value;
+            var values = new TValue[_items.Length];
+            for (var i = 0; i < values.Length; ++i)
+                values[i] = _items[i].Value;
             return values;
         }
 
         private void ResizeArray()
         {
-            if (this.count == this.items.Length)
+            if (Count == _items.Length)
             {
-                var newItems = new KeyValuePair<TPriority, TValue>[this.count * 2 + 1];
-                Array.Copy(this.items, newItems, this.count);
-                this.items = newItems;
+                var newItems = new KeyValuePair<TPriority, TValue>[Count * 2 + 1];
+                Array.Copy(_items, newItems, Count);
+                _items = newItems;
             }
         }
 
         public KeyValuePair<TPriority, TValue> Minimum()
         {
-            if (this.count == 0)
+            if (Count == 0)
+            {
                 throw new InvalidOperationException();
-            return this.items[0];
+            }
+            return _items[0];
         }
 
         public KeyValuePair<TPriority, TValue> RemoveMinimum()
         {
             // shortcut for heap with 1 element.
-            if (this.count == 1)
+            if (Count == 1)
             {
-                this.version++;
-                return this.items[--this.count];
+                _version++;
+                return _items[--Count];
             }
-            return this.RemoveAt(0);
+            return RemoveAt(0);
         }
 
         public KeyValuePair<TPriority, TValue> RemoveAt(int index)
         {
-            if (this.count == 0)
-                throw new InvalidOperationException("heap is empty");
-            if (index < 0 | index >= this.count | index + this.count < this.count)
-                throw new ArgumentOutOfRangeException("index");
-
-            this.version++;
-            // shortcut for heap with 1 element.
-            if (this.count == 1)
-                return this.items[--this.count];
-
-            if (index < this.count - 1)
+            if (Count == 0)
             {
-                this.Swap(index, this.count - 1);
-                this.MinHeapifyUp(index);
+                throw new InvalidOperationException("heap is empty");
+            }
+            if ((index < 0) | (index >= Count) | (index + Count < Count))
+            {
+                throw new ArgumentOutOfRangeException("index");
             }
 
-            return this.items[--this.count];
+            _version++;
+
+            // shortcut for heap with 1 element.
+            if (Count == 1)
+            {
+                return _items[--Count];
+            }
+
+            if (index < Count - 1)
+            {
+                Swap(index, Count - 1);
+                MinHeapifyUp(index);
+            }
+
+            return _items[--Count];
         }
 
         private void MinHeapifyUp(int index)
@@ -148,19 +140,19 @@ namespace QuickGraph.Collections
             var left = 2 * index + 1;
             var right = 2 * index + 2;
             while (
-                    (left < this.count - 1 && !this.Less(index, left)) ||
-                    (right < this.count - 1 && !this.Less(index, right))
-                   )
+                left < Count - 1 && !Less(index, left) ||
+                right < Count - 1 && !Less(index, right)
+            )
             {
-                if (right >= this.count - 1 ||
-                    this.Less(left, right))
+                if (right >= Count - 1 ||
+                    Less(left, right))
                 {
-                    this.Swap(left, index);
+                    Swap(left, index);
                     index = left;
                 }
                 else
                 {
-                    this.Swap(right, index);
+                    Swap(right, index);
                     index = right;
                 }
                 left = 2 * index + 1;
@@ -170,67 +162,68 @@ namespace QuickGraph.Collections
 
         public int IndexOf(TValue value)
         {
-            for (int i = 0; i < this.count; i++)
-            {
-                if (object.Equals(value, this.items[i].Value))
+            for (var i = 0; i < Count; i++)
+                if (Equals(value, _items[i].Value))
+                {
                     return i;
-            }
+                }
             return -1;
         }
 
         public bool MinimumUpdate(TPriority priority, TValue value)
         {
             // find index
-            for (int i = 0; i < this.count; i++)
-            {
-                if (object.Equals(value, this.items[i].Value))
+            for (var i = 0; i < Count; i++)
+                if (Equals(value, _items[i].Value))
                 {
-                    if( this.priorityComparsion(priority, this.items[i].Key) <= 0)
+                    if (PriorityComparison(priority, _items[i].Key) <= 0)
                     {
-                        this.RemoveAt(i);
-                        this.Add(priority, value);
+                        RemoveAt(i);
+                        Add(priority, value);
                         return true;
                     }
                     return false;
                 }
-            }
 
             // not in collection
-            this.Add(priority, value);
+            Add(priority, value);
             return true;
         }
 
         public void Update(TPriority priority, TValue value)
         {
             // find index
-            var index = this.IndexOf(value);
+            var index = IndexOf(value);
+
             // remove if needed
             if (index > -1)
-                this.RemoveAt(index);
-            this.Add(priority, value);
+            {
+                RemoveAt(index);
+            }
+            Add(priority, value);
         }
 
         [Pure]
         private bool Less(int i, int j)
         {
             Contract.Requires(
-                i >= 0 & i < this.count &
-                j >= 0 & j < this.count &
-                i != j);
+                (i >= 0) & (i < Count) &
+                (j >= 0) & (j < Count) &
+                (i != j));
 
-            return this.priorityComparsion(this.items[i].Key, this.items[j].Key) <= 0;
+            return PriorityComparison(_items[i].Key, _items[j].Key) <= 0;
         }
 
         private void Swap(int i, int j)
         {
             Contract.Requires(
-                i >= 0 && i < this.count &&
-                j >= 0 && j < this.count &&
+                i >= 0 && i < Count &&
+                j >= 0 && j < Count &&
                 i != j);
 
-            var kv = this.items[i];
-            this.items[i] = this.items[j];
-            this.items[j] = kv;
+            var kv = _items[i];
+            _items[i] = _items[j];
+            _items[j] = kv;
         }
 
 #if DEEP_INVARIANT
@@ -254,73 +247,83 @@ namespace QuickGraph.Collections
 #endif
 
         #region IEnumerable<KeyValuePair<TKey,TValue>> Members
+
         public IEnumerator<KeyValuePair<TPriority, TValue>> GetEnumerator()
         {
             return new Enumerator(this);
         }
 
-        struct Enumerator :
+        private struct Enumerator :
             IEnumerator<KeyValuePair<TPriority, TValue>>
         {
-            BinaryHeap<TPriority, TValue> owner;
-            KeyValuePair<TPriority, TValue>[] items;
-            readonly int count;
-            readonly int version;
-            int index;
+            private BinaryHeap<TPriority, TValue> _owner;
+
+            private KeyValuePair<TPriority, TValue>[] _items;
+
+            private readonly int _count;
+
+            private readonly int _version;
+
+            private int _index;
 
             public Enumerator(BinaryHeap<TPriority, TValue> owner)
             {
-                this.owner = owner;
-                this.items = owner.items;
-                this.count = owner.count;
-                this.version = owner.version;
-                this.index = -1;
+                _owner = owner;
+                _items = owner._items;
+                _count = owner.Count;
+                _version = owner._version;
+                _index = -1;
             }
 
             public KeyValuePair<TPriority, TValue> Current
             {
                 get
                 {
-                    if (this.version != this.owner.version)
+                    if (_version != _owner._version)
+                    {
                         throw new InvalidOperationException();
-                    if (this.index < 0 | this.index == this.count)
+                    }
+                    if ((_index < 0) | (_index == _count))
+                    {
                         throw new InvalidOperationException();
-                    Contract.Assert(this.index <= this.count);
-                    return this.items[this.index];
+                    }
+                    Contract.Assert(_index <= _count);
+                    return _items[_index];
                 }
             }
 
             void IDisposable.Dispose()
             {
-                this.owner = null;
-                this.items = null;
+                _owner = null;
+                _items = null;
             }
 
-            object IEnumerator.Current
-            {
-                get { return this.Current; }
-            }
+            object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
-                if (this.version != this.owner.version)
+                if (_version != _owner._version)
+                {
                     throw new InvalidOperationException();
-                return ++this.index < this.count;
+                }
+                return ++_index < _count;
             }
 
             public void Reset()
             {
-                if (this.version != this.owner.version)
+                if (_version != _owner._version)
+                {
                     throw new InvalidOperationException();
-                this.index = -1;
+                }
+                _index = -1;
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
-        #endregion
 
+        #endregion
     }
 }

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-using System.Reflection;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+    using System.Reflection;
+
     [ContractClassFor(typeof(IMutableVertexAndEdgeSet<,>))]
-    abstract class IMutableVertexAndEdgeSetContract<TVertex, TEdge>
+    internal abstract class MutableVertexAndEdgeSetContract<TVertex, TEdge>
         : IMutableVertexAndEdgeSet<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
@@ -17,8 +16,13 @@ namespace QuickGraph.Contracts
             IMutableVertexAndEdgeSet<TVertex, TEdge> ithis = this;
             Contract.Requires(edge != null);
             Contract.Ensures(ithis.ContainsEdge(edge));
-            Contract.Ensures(ithis.AllowParallelEdges || Contract.Result<bool>() == Contract.OldValue(!ithis.ContainsEdge(edge)));
-            Contract.Ensures(ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) + (Contract.Result<bool>() ? 1 : 0));
+            Contract.Ensures(
+                ithis.AllowParallelEdges ||
+                Contract.Result<bool>() == Contract.OldValue(!ithis.ContainsEdge(edge)));
+            Contract.Ensures(
+                ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) + (Contract.Result<bool>()
+                                                                             ? 1
+                                                                             : 0));
 
             return default(bool);
         }
@@ -27,10 +31,25 @@ namespace QuickGraph.Contracts
         {
             IMutableVertexAndEdgeSet<TVertex, TEdge> ithis = this;
             Contract.Requires(edges != null);
-            Contract.Requires(typeof(TEdge).GetTypeInfo().IsValueType || Enumerable.All(edges, edge => edge != null));
+            Contract.Requires(typeof(TEdge).GetTypeInfo().IsValueType || edges.All(edge => edge != null));
             Contract.Ensures(ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) + Contract.Result<int>());
 
             return default(int);
+        }
+
+        #region IMutableGraph<TVertex,TEdge> Members
+
+        void IMutableGraph<TVertex, TEdge>.Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
         }
 
         #region IVertexSet<TVertex> Members
@@ -166,21 +185,5 @@ namespace QuickGraph.Contracts
         }
 
         #endregion
-
-        #region IMutableGraph<TVertex,TEdge> Members
-
-        void IMutableGraph<TVertex, TEdge>.Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
     }
 }

@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
-    public interface ITreeBuilderAlgorithm<TVertex,TEdge>
+    public interface ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         event EdgeAction<TVertex, TEdge> TreeEdge;

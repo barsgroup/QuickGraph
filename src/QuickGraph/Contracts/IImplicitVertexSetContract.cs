@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IImplicitVertexSet<>))]
-    abstract class IImplicitVertexSetContract<TVertex>
+    internal abstract class ImplicitVertexSetContract<TVertex>
         : IImplicitVertexSet<TVertex>
     {
         [Pure]

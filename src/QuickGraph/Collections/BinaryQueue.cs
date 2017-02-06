@@ -1,67 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
-    public sealed class BinaryQueue<TVertex, TDistance> : 
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    public sealed class BinaryQueue<TVertex, TDistance> :
         IPriorityQueue<TVertex>
     {
-        private readonly Func<TVertex, TDistance> distances;
-        private readonly BinaryHeap<TDistance, TVertex> heap;
+        private readonly Func<TVertex, TDistance> _distances;
+
+        private readonly BinaryHeap<TDistance, TVertex> _heap;
+
+        public int Count => _heap.Count;
 
         public BinaryQueue(
             Func<TVertex, TDistance> distances
-            )
+        )
             : this(distances, Comparer<TDistance>.Default.Compare)
-        { }
+        {
+        }
 
-		public BinaryQueue(
+        public BinaryQueue(
             Func<TVertex, TDistance> distances,
             Func<TDistance, TDistance, int> distanceComparison
-            )
-		{
+        )
+        {
             Contract.Requires(distances != null);
             Contract.Requires(distanceComparison != null);
 
-			this.distances = distances;
-            this.heap = new BinaryHeap<TDistance, TVertex>(distanceComparison);
-		}
-
-		public void Update(TVertex v)
-		{
-            this.heap.Update(this.distances(v), v);
-        }
-
-        public int Count
-        {
-            get { return this.heap.Count; }
+            _distances = distances;
+            _heap = new BinaryHeap<TDistance, TVertex>(distanceComparison);
         }
 
         public bool Contains(TVertex value)
         {
-            return this.heap.IndexOf(value) > -1;
-        }
-
-        public void Enqueue(TVertex value)
-        {
-            this.heap.Add(this.distances(value), value);
+            return _heap.IndexOf(value) > -1;
         }
 
         public TVertex Dequeue()
         {
-            return this.heap.RemoveMinimum().Value;
+            return _heap.RemoveMinimum().Value;
+        }
+
+        public void Enqueue(TVertex value)
+        {
+            _heap.Add(_distances(value), value);
         }
 
         public TVertex Peek()
         {
-            return this.heap.Minimum().Value;
+            return _heap.Minimum().Value;
         }
 
         public TVertex[] ToArray()
         {
-            return this.heap.ToValueArray();
+            return _heap.ToValueArray();
+        }
+
+        public void Update(TVertex v)
+        {
+            _heap.Update(_distances(v), v);
         }
     }
 }

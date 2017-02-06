@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Algorithms.RandomWalks
+﻿namespace QuickGraph.Algorithms.RandomWalks
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     public abstract class WeightedMarkovEdgeChainBase<TVertex, TEdge> :
         MarkovEdgeChainBase<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private IDictionary<TEdge, double> weights;
+        public IDictionary<TEdge, double> Weights { get; set; }
+
         public WeightedMarkovEdgeChainBase(IDictionary<TEdge, double> weights)
         {
             Contract.Requires(weights != null);
 
-            this.weights = weights;
-        }
-
-        public IDictionary<TEdge, double> Weights
-        {
-            get { return this.weights; }
-            set { this.weights = value; }
+            Weights = weights;
         }
 
         protected double GetOutWeight(IImplicitGraph<TVertex, TEdge> g, TVertex u)
@@ -32,9 +26,7 @@ namespace QuickGraph.Algorithms.RandomWalks
         {
             double outWeight = 0;
             foreach (var e in edges)
-            {
-                outWeight += this.weights[e];
-            }
+                outWeight += Weights[e];
             return outWeight;
         }
 
@@ -55,7 +47,7 @@ namespace QuickGraph.Algorithms.RandomWalks
             double nextPos = 0;
             foreach (var e in edges)
             {
-                nextPos = pos + this.weights[e];
+                nextPos = pos + Weights[e];
                 if (position >= pos && position <= nextPos)
                 {
                     successor = e;

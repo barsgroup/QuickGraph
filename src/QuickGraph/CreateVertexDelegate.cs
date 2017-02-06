@@ -1,10 +1,7 @@
-﻿using System;
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// A vertex factory delegate.
-    /// </summary>
+    /// <summary>A vertex factory delegate.</summary>
     public delegate TVertex CreateVertexDelegate<TVertex, TEdge>(
-        IVertexListGraph<TVertex,TEdge> g) 
-    where TEdge : IEdge<TVertex>;
+        IVertexListGraph<TVertex, TEdge> g)
+        where TEdge : IEdge<TVertex>;
 }

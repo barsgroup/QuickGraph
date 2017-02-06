@@ -1,33 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using QuickGraph.Collections;
-
-namespace QuickGraph.Algorithms.Condensation
+﻿namespace QuickGraph.Algorithms.Condensation
 {
+    using System.Collections.Generic;
+
     public sealed class MergedEdge<TVertex, TEdge> : Edge<TVertex>
         where TEdge : IEdge<TVertex>
     {
-        private List<TEdge> edges = new List<TEdge>();
+        private List<TEdge> _edges = new List<TEdge>();
+
+        public IList<TEdge> Edges => _edges;
 
         public MergedEdge(TVertex source, TVertex target)
-            :base(source,target)
-        { }
-
-        public IList<TEdge> Edges
+            : base(source, target)
         {
-            get { return this.edges; }
         }
 
         public static MergedEdge<TVertex, TEdge> Merge(
             MergedEdge<TVertex, TEdge> inEdge,
             MergedEdge<TVertex, TEdge> outEdge
-            )
+        )
         {
-            MergedEdge<TVertex, TEdge> newEdge = new MergedEdge<TVertex, TEdge>(
-                inEdge.Source, outEdge.Target);
-            newEdge.edges = new List<TEdge>(inEdge.Edges.Count + outEdge.Edges.Count);
-            newEdge.edges.AddRange(inEdge.Edges);
-            newEdge.edges.AddRange(outEdge.edges);
+            var newEdge = new MergedEdge<TVertex, TEdge>(
+                inEdge.Source,
+                outEdge.Target);
+            newEdge._edges = new List<TEdge>(inEdge.Edges.Count + outEdge.Edges.Count);
+            newEdge._edges.AddRange(inEdge.Edges);
+            newEdge._edges.AddRange(outEdge._edges);
 
             return newEdge;
         }

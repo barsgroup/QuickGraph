@@ -1,39 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
     public class UndirectedEdgeEventArgs<TVertex, TEdge>
         : EdgeEventArgs<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private readonly bool reversed;
+        public bool Reversed { get; }
+
+        public TVertex Source => Reversed
+                                     ? Edge.Target
+                                     : Edge.Source;
+
+        public TVertex Target => Reversed
+                                     ? Edge.Source
+                                     : Edge.Target;
 
         public UndirectedEdgeEventArgs(TEdge edge, bool reversed)
-            :base(edge)
+            : base(edge)
         {
-            this.reversed = reversed;
-        }
-
-        public bool Reversed
-        {
-            get { return this.reversed; }
-        }
-
-        public TVertex Source
-        {
-            get { return this.reversed ? this.Edge.Target : this.Edge.Source; }
-        }
-
-        public TVertex Target
-        {
-            get { return this.reversed ? this.Edge.Source : this.Edge.Target; }
+            Reversed = reversed;
         }
     }
 
     public delegate void UndirectedEdgeAction<TVertex, TEdge>(
-        Object sender,
+        object sender,
         UndirectedEdgeEventArgs<TVertex, TEdge> e)
         where TEdge : IEdge<TVertex>;
 }

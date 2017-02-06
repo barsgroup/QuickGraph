@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace QuickGraph.Algorithms.RandomWalks
+﻿namespace QuickGraph.Algorithms.RandomWalks
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public sealed class NormalizedMarkovEdgeChain<TVertex, TEdge> :
         MarkovEdgeChainBase<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        public override bool TryGetSuccessor(IImplicitGraph<TVertex,TEdge> g, TVertex u, out TEdge successor)
+        public override bool TryGetSuccessor(IImplicitGraph<TVertex, TEdge> g, TVertex u, out TEdge successor)
         {
-            int outDegree = g.OutDegree(u);
+            var outDegree = g.OutDegree(u);
             if (outDegree > 0)
             {
-                int index = this.Rand.Next(0, outDegree);
+                var index = Rand.Next(0, outDegree);
                 successor = g.OutEdge(u, index);
                 return true;
             }
@@ -24,12 +23,12 @@ namespace QuickGraph.Algorithms.RandomWalks
 
         public override bool TryGetSuccessor(IEnumerable<TEdge> edges, TVertex u, out TEdge successor)
         {
-            var edgeCount = Enumerable.Count(edges);
+            var edgeCount = edges.Count();
 
             if (edgeCount > 0)
             {
-                int index = this.Rand.Next(0, edgeCount);
-                successor = Enumerable.ElementAt(edges, index);
+                var index = Rand.Next(0, edgeCount);
+                successor = edges.ElementAt(index);
                 return true;
             }
 

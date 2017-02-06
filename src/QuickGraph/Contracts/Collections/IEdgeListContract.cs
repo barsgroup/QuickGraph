@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using QuickGraph.Clonable;
-
-namespace QuickGraph.Collections
+﻿namespace QuickGraph.Collections
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Clonable;
+
     [ContractClassFor(typeof(IEdgeList<,>))]
-    abstract class IEdgeListContract<TVertex,TEdge> 
+    internal abstract class EdgeListContract<TVertex, TEdge>
         : IEdgeList<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
@@ -17,9 +19,11 @@ namespace QuickGraph.Collections
         }
 
         void IEdgeList<TVertex, TEdge>.TrimExcess()
-        { }
+        {
+        }
 
         #region others
+
         int IList<TEdge>.IndexOf(TEdge item)
         {
             throw new NotImplementedException();
@@ -37,14 +41,8 @@ namespace QuickGraph.Collections
 
         TEdge IList<TEdge>.this[int index]
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         void ICollection<TEdge>.Add(TEdge item)
@@ -87,7 +85,7 @@ namespace QuickGraph.Collections
             throw new NotImplementedException();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
         }
@@ -96,6 +94,7 @@ namespace QuickGraph.Collections
         {
             throw new NotImplementedException();
         }
+
         #endregion
     }
 }

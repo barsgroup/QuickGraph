@@ -1,71 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-using QuickGraph.Algorithms.Services;
-
-namespace QuickGraph.Algorithms
+﻿namespace QuickGraph.Algorithms
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Services;
+
     public abstract class RootedSearchAlgorithmBase<TVertex, TGraph>
         : RootedAlgorithmBase<TVertex, TGraph>
     {
         private TVertex _goalVertex;
-        private bool hasGoalVertex;
+
+        private bool _hasGoalVertex;
 
         protected RootedSearchAlgorithmBase(
             IAlgorithmComponent host,
             TGraph visitedGraph)
-            :base(host, visitedGraph)
-        {}
-
-        public bool TryGetGoalVertex(out TVertex goalVertex)
+            : base(host, visitedGraph)
         {
-            if (this.hasGoalVertex)
-            {
-                goalVertex = this._goalVertex;
-                return true;
-            }
-            else
-            {
-                goalVertex = default(TVertex);
-                return false;
-            }
-        }
-
-        public void SetGoalVertex(TVertex goalVertex)
-        {
-            Contract.Requires(goalVertex != null);
-
-            bool changed = Comparer<TVertex>.Default.Compare(this._goalVertex, goalVertex) != 0;
-            this._goalVertex = goalVertex;
-            if (changed)
-                this.OnGoalVertexChanged(EventArgs.Empty);
-            this.hasGoalVertex = true;
         }
 
         public void ClearGoalVertex()
         {
-            this._goalVertex = default(TVertex);
-            this.hasGoalVertex = false;
-        }
-
-        public event EventHandler GoalReached;
-        protected virtual void OnGoalReached()
-        {
-            var eh = this.GoalReached;
-            if (eh != null)
-                eh(this, EventArgs.Empty);
-        }
-
-        public event EventHandler GoalVertexChanged;
-        protected virtual void OnGoalVertexChanged(EventArgs e)
-        {
-            Contract.Requires(e != null);
-
-            var eh = this.GoalVertexChanged;
-            if (eh != null)
-                eh(this, e);
+            _goalVertex = default(TVertex);
+            _hasGoalVertex = false;
         }
 
         public void Compute(TVertex root, TVertex goal)
@@ -73,8 +31,56 @@ namespace QuickGraph.Algorithms
             Contract.Requires(root != null);
             Contract.Requires(goal != null);
 
-            this.SetGoalVertex(goal);
-            this.Compute(root);
+            SetGoalVertex(goal);
+            Compute(root);
         }
+
+        public void SetGoalVertex(TVertex goalVertex)
+        {
+            Contract.Requires(goalVertex != null);
+
+            var changed = Comparer<TVertex>.Default.Compare(_goalVertex, goalVertex) != 0;
+            _goalVertex = goalVertex;
+            if (changed)
+            {
+                OnGoalVertexChanged(EventArgs.Empty);
+            }
+            _hasGoalVertex = true;
+        }
+
+        public bool TryGetGoalVertex(out TVertex goalVertex)
+        {
+            if (_hasGoalVertex)
+            {
+                goalVertex = _goalVertex;
+                return true;
+            }
+            goalVertex = default(TVertex);
+            return false;
+        }
+
+        protected virtual void OnGoalReached()
+        {
+            var eh = GoalReached;
+            if (eh != null)
+            {
+                eh(this, EventArgs.Empty);
+            }
+        }
+
+        protected virtual void OnGoalVertexChanged(EventArgs e)
+        {
+            Contract.Requires(e != null);
+
+            var eh = GoalVertexChanged;
+            if (eh != null)
+            {
+                eh(this, e);
+            }
+        }
+
+        public event EventHandler GoalReached;
+
+        public event EventHandler GoalVertexChanged;
     }
 }

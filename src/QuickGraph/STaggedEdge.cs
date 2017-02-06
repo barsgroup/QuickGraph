@@ -1,78 +1,66 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-
-namespace QuickGraph
+﻿namespace QuickGraph
 {
-    /// <summary>
-    /// A tagged edge as value type.
-    /// </summary>
+    using System;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+    using System.Runtime.InteropServices;
+
+    /// <summary>A tagged edge as value type.</summary>
     /// <typeparam name="TVertex">type of the vertices</typeparam>
     /// <typeparam name="TTag"></typeparam>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay("{Source}->{Target}:{Tag}")]
     public struct STaggedEdge<TVertex, TTag>
         : IEdge<TVertex>
-        , ITagged<TTag>
+          ,
+          ITagged<TTag>
     {
-        readonly TVertex source;
-        readonly TVertex target;
-        TTag tag;
+        private TTag tag;
 
         public STaggedEdge(TVertex source, TVertex target, TTag tag) : this()
         {
             Contract.Requires(source != null);
             Contract.Requires(target != null);
 
-            this.source = source;
-            this.target = target;
+            Source = source;
+            Target = target;
             this.tag = tag;
-            this.TagChanged = null;
+            TagChanged = null;
         }
 
-        public TVertex Source
-        {
-            get { return this.source; }
-        }
+        public TVertex Source { get; }
 
-        public TVertex Target
-        {
-            get { return this.target; }
-        }
+        public TVertex Target { get; }
 
         public event EventHandler TagChanged;
 
-        void OnTagChanged(EventArgs e)
+        private void OnTagChanged(EventArgs e)
         {
-            var eh = this.TagChanged;
+            var eh = TagChanged;
             if (eh != null)
+            {
                 eh(this, e);
+            }
         }
 
         public TTag Tag
         {
-            get { return this.tag; }
+            get { return tag; }
             set
             {
-                if (!object.Equals(this.tag, value))
+                if (!Equals(tag, value))
                 {
-                    this.tag = value;
-                    this.OnTagChanged(EventArgs.Empty);
+                    tag = value;
+                    OnTagChanged(EventArgs.Empty);
                 }
             }
         }
 
-        /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
+        /// <summary>Returns a <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.</summary>
+        /// <returns>A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.</returns>
         public override string ToString()
         {
-            return String.Format("{0}->{1}:{2}", this.Source, this.Target, this.Tag);
+            return string.Format("{0}->{1}:{2}", Source, Target, Tag);
         }
-
     }
 }

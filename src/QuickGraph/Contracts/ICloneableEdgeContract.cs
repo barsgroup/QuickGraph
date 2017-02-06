@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(ICloneableEdge<,>))]
-    abstract class ICloneableEdgeContract<TVertex, TEdge>
-        : ICloneableEdge<TVertex,TEdge>
+    internal abstract class CloneableEdgeContract<TVertex, TEdge>
+        : ICloneableEdge<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         TEdge ICloneableEdge<TVertex, TEdge>.Clone(TVertex source, TVertex target)

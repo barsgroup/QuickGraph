@@ -1,17 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Reflection;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+    using System.Reflection;
+
     [ContractClassFor(typeof(IMutableEdgeListGraph<,>))]
-    abstract class IMutableEdgeListGraphContract<TVertex, TEdge>
+    internal abstract class MutableEdgeListGraphContract<TVertex, TEdge>
         : IMutableEdgeListGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        #region IMutableGraph<TVertex,TEdge> Members
+
+        void IMutableGraph<TVertex, TEdge>.Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
+        {
+            add { throw new NotImplementedException(); }
+            remove { throw new NotImplementedException(); }
+        }
+
         #region IMutableEdgeListGraph<TVertex,TEdge> Members
+
         bool IMutableEdgeListGraph<TVertex, TEdge>.AddEdge(TEdge e)
         {
             IMutableEdgeListGraph<TVertex, TEdge> ithis = this;
@@ -19,8 +35,13 @@ namespace QuickGraph.Contracts
             Contract.Requires(ithis.ContainsVertex(e.Source));
             Contract.Requires(ithis.ContainsVertex(e.Target));
             Contract.Ensures(ithis.ContainsEdge(e));
-            Contract.Ensures(ithis.AllowParallelEdges || Contract.Result<bool>() == Contract.OldValue(!ithis.ContainsEdge(e)));
-            Contract.Ensures(ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) + (Contract.Result<bool>() ? 1 : 0));
+            Contract.Ensures(
+                ithis.AllowParallelEdges ||
+                Contract.Result<bool>() == Contract.OldValue(!ithis.ContainsEdge(e)));
+            Contract.Ensures(
+                ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) + (Contract.Result<bool>()
+                                                                             ? 1
+                                                                             : 0));
 
             return default(bool);
         }
@@ -35,14 +56,16 @@ namespace QuickGraph.Contracts
         {
             IMutableEdgeListGraph<TVertex, TEdge> ithis = this;
             Contract.Requires(edges != null);
-            Contract.Requires(typeof(TEdge).GetTypeInfo().IsValueType || Enumerable.All(edges, edge => edge != null));
-            Contract.Requires(Enumerable.All(edges, edge =>
-                ithis.ContainsVertex(edge.Source) &&
-                ithis.ContainsVertex(edge.Target)
+            Contract.Requires(typeof(TEdge).GetTypeInfo().IsValueType || edges.All(edge => edge != null));
+            Contract.Requires(
+                edges.All(
+                    edge =>
+                        ithis.ContainsVertex(edge.Source) &&
+                        ithis.ContainsVertex(edge.Target)
                 ));
-            Contract.Ensures(Enumerable.All(edges, edge => ithis.ContainsEdge(edge)), "all edge from edges belong to the graph");
+            Contract.Ensures(edges.All(edge => ithis.ContainsEdge(edge)), "all edge from edges belong to the graph");
             Contract.Ensures(
-                Contract.Result<int>() == Contract.OldValue(Enumerable.Count(edges, edge => !ithis.ContainsEdge(edge))));
+                Contract.Result<int>() == Contract.OldValue(edges.Count(edge => !ithis.ContainsEdge(edge))));
             Contract.Ensures(ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) + Contract.Result<int>());
 
             return default(int);
@@ -54,7 +77,10 @@ namespace QuickGraph.Contracts
             Contract.Requires(e != null);
             Contract.Ensures(Contract.Result<bool>() == Contract.OldValue(ithis.ContainsEdge(e)));
             Contract.Ensures(!ithis.ContainsEdge(e));
-            Contract.Ensures(ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) - (Contract.Result<bool>() ? 1 : 0));
+            Contract.Ensures(
+                ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) - (Contract.Result<bool>()
+                                                                             ? 1
+                                                                             : 0));
 
             return default(bool);
         }
@@ -69,8 +95,8 @@ namespace QuickGraph.Contracts
         {
             IMutableEdgeListGraph<TVertex, TEdge> ithis = this;
             Contract.Requires(predicate != null);
-            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(Enumerable.Count(ithis.Edges, e => predicate(e))));
-            Contract.Ensures(Enumerable.All(ithis.Edges, e => !predicate(e)));
+            Contract.Ensures(Contract.Result<int>() == Contract.OldValue(ithis.Edges.Count(e => predicate(e))));
+            Contract.Ensures(ithis.Edges.All(e => !predicate(e)));
             Contract.Ensures(ithis.EdgeCount == Contract.OldValue(ithis.EdgeCount) - Contract.Result<int>());
 
             return default(int);
@@ -78,14 +104,8 @@ namespace QuickGraph.Contracts
 
         #endregion
 
-        #region IMutableGraph<TVertex,TEdge> Members
-        void IMutableGraph<TVertex, TEdge>.Clear()
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
         #region IGraph<TVertex,TEdge> Members
+
         bool IGraph<TVertex, TEdge>.IsDirected
         {
             get { throw new NotImplementedException(); }
@@ -123,6 +143,7 @@ namespace QuickGraph.Contracts
         #endregion
 
         #region IVertexSet<TVertex> Members
+
         bool IVertexSet<TVertex>.IsVerticesEmpty
         {
             get { throw new NotImplementedException(); }
@@ -142,13 +163,7 @@ namespace QuickGraph.Contracts
         {
             throw new NotImplementedException();
         }
+
         #endregion
-
-
-        event EventHandler IMutableGraph<TVertex, TEdge>.Cleared
-        {
-            add { throw new NotImplementedException(); }
-            remove { throw new NotImplementedException(); }
-        }
     }
 }

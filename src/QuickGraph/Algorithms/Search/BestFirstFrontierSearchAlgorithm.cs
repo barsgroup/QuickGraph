@@ -1,29 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QuickGraph.Collections;
-using QuickGraph.Algorithms.Services;
-using System.Diagnostics.Contracts;
-using QuickGraph.Algorithms.ShortestPath;
-
-namespace QuickGraph.Algorithms.Search
+﻿namespace QuickGraph.Algorithms.Search
 {
-    /// <summary>
-    /// Best first frontier search
-    /// </summary>
-    /// <remarks>
-    /// Algorithm from Frontier Search, Korkf, Zhand, Thayer, Hohwald.
-    /// </remarks>
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
+    using QuickGraph.Algorithms.Services;
+    using QuickGraph.Collections;
+
+    /// <summary>Best first frontier search</summary>
+    /// <remarks>Algorithm from Frontier Search, Korkf, Zhand, Thayer, Hohwald.</remarks>
     /// <typeparam name="TVertex">type of the vertices</typeparam>
     /// <typeparam name="TEdge">type of the edges</typeparam>
     public sealed class BestFirstFrontierSearchAlgorithm<TVertex, TEdge>
         : RootedSearchAlgorithmBase<TVertex, IBidirectionalIncidenceGraph<TVertex, TEdge>>
-        , ITreeBuilderAlgorithm<TVertex, TEdge>
+          ,
+          ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        private readonly Func<TEdge, double> edgeWeights;
-        private readonly IDistanceRelaxer distanceRelaxer;
+        private readonly IDistanceRelaxer _distanceRelaxer;
+
+        private readonly Func<TEdge, double> _edgeWeights;
+
+#if DEBUG
+        public int OperatorMaxCount { get; private set; } = -1;
+#endif
 
         public BestFirstFrontierSearchAlgorithm(
             IAlgorithmComponent host,
@@ -35,30 +35,34 @@ namespace QuickGraph.Algorithms.Search
             Contract.Requires(edgeWeights != null);
             Contract.Requires(distanceRelaxer != null);
 
-            this.edgeWeights = edgeWeights;
-            this.distanceRelaxer = distanceRelaxer;
+            _edgeWeights = edgeWeights;
+            _distanceRelaxer = distanceRelaxer;
         }
 
         protected override void InternalCompute()
         {
             TVertex root;
-            if (!this.TryGetRootVertex(out root))
+            if (!TryGetRootVertex(out root))
+            {
                 throw new InvalidOperationException("root vertex not set");
+            }
             TVertex goal;
-            if (!this.TryGetGoalVertex(out goal))
+            if (!TryGetGoalVertex(out goal))
+            {
                 throw new InvalidOperationException("goal vertex not set");
+            }
 
             // little shortcut
             if (root.Equals(goal))
             {
-                this.OnGoalReached();
+                OnGoalReached();
                 return; // found it
             }
 
-            var cancelManager = this.Services.CancelManager;
-            var open = new BinaryHeap<double, TVertex>(this.distanceRelaxer.Compare);
+            var cancelManager = Services.CancelManager;
+            var open = new BinaryHeap<double, TVertex>(_distanceRelaxer.Compare);
             var operators = new Dictionary<TEdge, GraphColor>();
-            var g = this.VisitedGraph;
+            var g = VisitedGraph;
 
             // (1) Place the initial node on Open, with all its operators marked unused.
             open.Add(0, root);
@@ -67,7 +71,10 @@ namespace QuickGraph.Algorithms.Search
 
             while (open.Count > 0)
             {
-                if (cancelManager.IsCancelling) return;
+                if (cancelManager.IsCancelling)
+                {
+                    return;
+                }
 
                 // (3) Else, choose an Open node n of lowest cost for expansion
                 var entry = open.RemoveMinimum();
@@ -77,7 +84,7 @@ namespace QuickGraph.Algorithms.Search
                 // (4) if node n is a goal node, terminate with success
                 if (n.Equals(goal))
                 {
-                    this.OnGoalReached();
+                    OnGoalReached();
                     return;
                 }
 
@@ -86,15 +93,17 @@ namespace QuickGraph.Algorithms.Search
                 // compute their cost and delete node n
                 foreach (var edge in g.OutEdges(n))
                 {
-                    if (EdgeExtensions.IsSelfEdge<TVertex, TEdge>(edge)) 
+                    if (edge.IsSelfEdge<TVertex, TEdge>())
+                    {
                         continue; // skip self-edges
+                    }
 
                     GraphColor edgeColor;
-                    bool hasColor = operators.TryGetValue(edge, out edgeColor);
+                    var hasColor = operators.TryGetValue(edge, out edgeColor);
                     if (!hasColor || edgeColor == GraphColor.White)
                     {
-                        var weight = this.edgeWeights(edge);
-                        var ncost = this.distanceRelaxer.Combine(cost, weight);
+                        var weight = _edgeWeights(edge);
+                        var ncost = _distanceRelaxer.Combine(cost, weight);
 
                         // (7) foreach neighboring node of n' mark the operator from n to n' as used
                         // (8) for each node n', if there is no copy of n' in open addit
@@ -102,18 +111,21 @@ namespace QuickGraph.Algorithms.Search
                         // mak as used in any of the copies
                         operators[edge] = GraphColor.Gray;
                         if (open.MinimumUpdate(ncost, edge.Target))
-                            this.OnTreeEdge(edge);
+                        {
+                            OnTreeEdge(edge);
+                        }
                     }
                     else if (hasColor)
                     {
                         Contract.Assume(edgeColor == GraphColor.Gray);
+
                         // edge already seen, remove it
                         operators.Remove(edge);
                     }
                 }
 
 #if DEBUG
-                this.operatorMaxCount = Math.Max(this.operatorMaxCount, operators.Count);
+                OperatorMaxCount = Math.Max(OperatorMaxCount, operators.Count);
 #endif
 
                 // (6) in a directed graph, generate each predecessor node n via an unused operator
@@ -124,29 +136,25 @@ namespace QuickGraph.Algorithms.Search
                     if (operators.TryGetValue(edge, out edgeColor) &&
                         edgeColor == GraphColor.Gray)
                     {
-                        // delete node n
                         operators.Remove(edge);
                     }
                 }
             }
         }
 
-#if DEBUG
-        int operatorMaxCount = -1;
-        public int OperatorMaxCount
-        {
-            get { return this.operatorMaxCount; }
-        }
-#endif
-
         #region ITreeBuilderAlgorithm<TVertex,TEdge> Members
+
         public event EdgeAction<TVertex, TEdge> TreeEdge;
+
         private void OnTreeEdge(TEdge edge)
         {
-            var eh = this.TreeEdge;
+            var eh = TreeEdge;
             if (eh != null)
+            {
                 eh(edge);
+            }
         }
+
         #endregion
     }
 }

@@ -1,16 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics.Contracts;
-
-namespace QuickGraph.Contracts
+﻿namespace QuickGraph.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+
     [ContractClassFor(typeof(IBidirectionalGraph<,>))]
-    abstract class IBidirectionalGraphContract<TVertex, TEdge>
+    internal abstract class BidirectionalGraphContract<TVertex, TEdge>
         : IBidirectionalGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        #region IImplicitVertexSet<TVertex> Members
+
+        bool IImplicitVertexSet<TVertex>.ContainsVertex(TVertex vertex)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region IIncidenceGraph<TVertex,TEdge> Members
 
         bool IIncidenceGraph<TVertex, TEdge>.ContainsEdge(TVertex source, TVertex target)
@@ -69,15 +76,6 @@ namespace QuickGraph.Contracts
         bool IGraph<TVertex, TEdge>.AllowParallelEdges
         {
             get { throw new NotImplementedException(); }
-        }
-
-        #endregion
-
-        #region IImplicitVertexSet<TVertex> Members
-
-        bool IImplicitVertexSet<TVertex>.ContainsVertex(TVertex vertex)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion
