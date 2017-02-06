@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT
-#endif
 using System.Diagnostics.Contracts;
 using QuickGraph.Clonable;
 

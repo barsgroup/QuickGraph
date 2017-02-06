@@ -276,12 +276,10 @@ namespace QuickGraph
             return this;
         }
 
-#if !SILVERLIGHT
         object ICloneable.Clone()
         {
             return this.Clone();
         }
-#endif
         #endregion
 
         #region IBidirectionalGraph<TVertex,TEdge> Members

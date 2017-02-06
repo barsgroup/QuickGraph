@@ -183,12 +183,10 @@ namespace QuickGraph
                 );
         }
 
-#if !SILVERLIGHT
         object ICloneable.Clone()
         {
             return this.Clone();
         }
-#endif
         #endregion
 
         #region IVertexSet<TVertex> Members

@@ -13,9 +13,7 @@ namespace QuickGraph.Contracts
     {
         [Pure]
         public static bool VertexCountEqual<TVertex>(
-#if !NET20
             this 
-#endif
             IVertexSet<TVertex> left,
             IVertexSet<TVertex> right)
         {
@@ -27,9 +25,7 @@ namespace QuickGraph.Contracts
 
         [Pure]
         public static bool EdgeCountEqual<TVertex, TEdge>(
-#if !NET20
             this 
-#endif
             IEdgeListGraph<TVertex, TEdge> left,
             IEdgeListGraph<TVertex, TEdge> right)
             where TEdge : IEdge<TVertex>

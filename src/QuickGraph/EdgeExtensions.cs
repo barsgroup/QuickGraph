@@ -27,9 +27,7 @@ namespace QuickGraph
         /// <returns></returns>
         [Pure]
         public static bool IsSelfEdge<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
             TEdge edge)
             where TEdge : IEdge<TVertex>
         {
@@ -49,9 +47,7 @@ this
         /// <returns></returns>
         [Pure]
         public static TVertex GetOtherVertex<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
             TEdge edge, TVertex vertex)
             where TEdge : IEdge<TVertex>
         {
@@ -76,9 +72,7 @@ this
         /// <returns></returns>
         [Pure]
         public static bool IsAdjacent<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
             TEdge edge, TVertex vertex)
             where TEdge : IEdge<TVertex>
         {
@@ -94,9 +88,7 @@ this
 
         [Pure]
         public static bool IsPath<TVertex, TEdge>(
-#if !NET20
 this 
-#endif            
             IEnumerable<TEdge> path)
             where TEdge : IEdge<TVertex>
         {
@@ -156,9 +148,7 @@ this
 
         [Pure]
         public static bool IsPathWithoutCycles<TVertex, TEdge>(
-#if !NET20
 this 
-#endif            
             IEnumerable<TEdge> path)
             where TEdge : IEdge<TVertex>
         {
@@ -203,9 +193,7 @@ this
         /// <param name="edge"></param>
         /// <returns></returns>
         public static SEquatableEdge<TVertex> ToVertexPair<TVertex, TEdge>(
-#if !NET20
 this 
-#endif            
             TEdge edge)
             where TEdge : IEdge<TVertex>
         {
@@ -226,9 +214,7 @@ this
         /// <param name="vertex"></param>
         /// <returns></returns>
         public static bool IsPredecessor<TVertex, TEdge>(
-#if !NET20
 this 
-#endif            
             IDictionary<TVertex, TEdge> predecessors, 
             TVertex root, 
             TVertex vertex)
@@ -269,9 +255,7 @@ this
         /// <param name="result"></param>
         /// <returns></returns>
         public static bool TryGetPath<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
             IDictionary<TVertex, TEdge> predecessors,
             TVertex v,
             out IEnumerable<TEdge> result)
@@ -343,9 +327,7 @@ this
         /// <param name="target"></param>
         /// <returns></returns>
         public static bool UndirectedVertexEquality<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
             TEdge edge,
             TVertex source,
             TVertex target)
@@ -369,9 +351,7 @@ this
         /// <param name="target"></param>
         /// <returns></returns>
         public static bool SortedVertexEquality<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
 TEdge edge,
             TVertex source,
             TVertex target)

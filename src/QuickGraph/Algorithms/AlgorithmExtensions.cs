@@ -202,9 +202,7 @@ namespace QuickGraph.Algorithms
 
         #region shortest paths
         public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsDijkstra<TVertex, TEdge>(
-#if !NET20
             this 
-#endif
             IUndirectedGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> edgeWeights,
             TVertex source
@@ -228,9 +226,7 @@ namespace QuickGraph.Algorithms
         }
 
         public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsAStar<TVertex, TEdge>(
-#if !NET20
 this 
-#endif
             IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> edgeWeights,
             Func<TVertex, double> costHeuristic,
@@ -256,9 +252,7 @@ this
         }
 
         public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsDijkstra<TVertex, TEdge>(
-#if !NET20
             this 
-#endif
             IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> edgeWeights,
             TVertex source
@@ -282,9 +276,7 @@ this
         }
 
         public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsBellmanFord<TVertex, TEdge>(
-#if !NET20
             this 
-#endif
             IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> edgeWeights,
             TVertex source
@@ -308,9 +300,7 @@ this
         }
 
         public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsDag<TVertex, TEdge>(
-#if !NET20
             this 
-#endif
             IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> edgeWeights,
             TVertex source
@@ -349,9 +339,7 @@ this
         /// <param name="pathCount"></param>
         /// <returns></returns>
         public static IEnumerable<IEnumerable<TEdge>> RankedShortestPathHoffmanPavley<TVertex, TEdge>(
-#if !NET20
             this 
-#endif
             IBidirectionalGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> edgeWeights,
             TVertex source,
