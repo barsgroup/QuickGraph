@@ -82,28 +82,28 @@
                 _ds.Union(e.Source, e.Target);
 
             // unhook/hook to graph event
-            VisitedGraph.EdgeAdded += VisitedGraph_EdgeAdded;
-            VisitedGraph.EdgeRemoved += VisitedGraph_EdgeRemoved;
-            VisitedGraph.VertexAdded += VisitedGraph_VertexAdded;
-            VisitedGraph.VertexRemoved += VisitedGraph_VertexRemoved;
+            VisitedGraph.EdgeAdded += VisitedGraphEdgeAdded;
+            VisitedGraph.EdgeRemoved += VisitedGraphEdgeRemoved;
+            VisitedGraph.VertexAdded += VisitedGraphVertexAdded;
+            VisitedGraph.VertexRemoved += VisitedGraphVertexRemoved;
         }
 
-        private void VisitedGraph_EdgeAdded(TEdge e)
+        private void VisitedGraphEdgeAdded(TEdge e)
         {
             _ds.Union(e.Source, e.Target);
         }
 
-        private void VisitedGraph_EdgeRemoved(TEdge e)
+        private void VisitedGraphEdgeRemoved(TEdge e)
         {
             throw new InvalidOperationException("edge removal not supported for incremental connected components");
         }
 
-        private void VisitedGraph_VertexAdded(TVertex v)
+        private void VisitedGraphVertexAdded(TVertex v)
         {
             _ds.MakeSet(v);
         }
 
-        private void VisitedGraph_VertexRemoved(TVertex e)
+        private void VisitedGraphVertexRemoved(TVertex e)
         {
             throw new InvalidOperationException("vertex removal not supported for incremental connected components");
         }

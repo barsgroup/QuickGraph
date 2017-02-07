@@ -363,7 +363,7 @@
         /// <param name="weights"></param>
         /// <returns></returns>
         public static IEnumerable<TEdge> MinimumSpanningTreeKruskal<TVertex, TEdge>(
-            IUndirectedGraph<TVertex, TEdge> visitedGraph,
+            this IUndirectedGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> weights)
             where TEdge : IEdge<TVertex>
         {
@@ -395,7 +395,7 @@
         /// <param name="weights"></param>
         /// <returns></returns>
         public static IEnumerable<TEdge> MinimumSpanningTreePrim<TVertex, TEdge>(
-            IUndirectedGraph<TVertex, TEdge> visitedGraph,
+            this IUndirectedGraph<TVertex, TEdge> visitedGraph,
             Func<TEdge, double> weights)
             where TEdge : IEdge<TVertex>
         {
@@ -426,8 +426,7 @@
         /// <returns>colleciton of odd vertices</returns>
         /// <exception cref="ArgumentNullException">g is a null reference</exception>
         public static List<TVertex> OddVertices<TVertex, TEdge>(
-            this
-                IVertexAndEdgeListGraph<TVertex, TEdge> g)
+            this IVertexAndEdgeListGraph<TVertex, TEdge> g)
             where TEdge : IEdge<TVertex>
         {
             Contract.Requires(g != null);
@@ -465,7 +464,7 @@
         /// <param name="pairs"></param>
         /// <returns></returns>
         public static TryFunc<SEquatableEdge<TVertex>, TVertex> OfflineLeastCommonAncestorTarjan<TVertex, TEdge>(
-            IVertexListGraph<TVertex, TEdge> visitedGraph,
+            this IVertexListGraph<TVertex, TEdge> visitedGraph,
             TVertex root,
             IEnumerable<SEquatableEdge<TVertex>> pairs
         )
@@ -531,8 +530,7 @@
         /// <param name="visitedGraph"></param>
         /// <returns></returns>
         public static IEnumerable<TVertex> Roots<TVertex, TEdge>(
-            this
-                IBidirectionalGraph<TVertex, TEdge> visitedGraph)
+            this IBidirectionalGraph<TVertex, TEdge> visitedGraph)
             where TEdge : IEdge<TVertex>
         {
             Contract.Requires(visitedGraph != null);
@@ -545,7 +543,7 @@
         /// <param name="visitedGraph"></param>
         /// <returns></returns>
         public static IEnumerable<TVertex> Roots<TVertex, TEdge>(
-            IVertexListGraph<TVertex, TEdge> visitedGraph)
+            this IVertexListGraph<TVertex, TEdge> visitedGraph)
             where TEdge : IEdge<TVertex>
         {
             Contract.Requires(visitedGraph != null);
@@ -868,18 +866,18 @@
                 var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(g);
                 try
                 {
-                    dfs.BackEdge += dfs_BackEdge;
+                    dfs.BackEdge += DfsBackEdge;
                     _isDag = true;
                     dfs.Compute();
                     return _isDag;
                 }
                 finally
                 {
-                    dfs.BackEdge -= dfs_BackEdge;
+                    dfs.BackEdge -= DfsBackEdge;
                 }
             }
 
-            private void dfs_BackEdge(TEdge e)
+            private void DfsBackEdge(TEdge e)
             {
                 _isDag = false;
             }

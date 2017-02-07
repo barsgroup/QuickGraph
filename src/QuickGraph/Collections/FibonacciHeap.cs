@@ -200,19 +200,19 @@
         {
         }
 
-        public FibonacciHeap(HeapDirection Direction)
-            : this(Direction, Comparer<TPriority>.Default.Compare)
+        public FibonacciHeap(HeapDirection direction)
+            : this(direction, Comparer<TPriority>.Default.Compare)
         {
         }
 
-        public FibonacciHeap(HeapDirection Direction, Func<TPriority, TPriority, int> priorityComparison)
+        public FibonacciHeap(HeapDirection direction, Func<TPriority, TPriority, int> priorityComparison)
         {
             _nodes = new FibonacciHeapLinkedList<TPriority, TValue>();
             _degreeToNode = new Dictionary<int, FibonacciHeapCell<TPriority, TValue>>();
-            _directionMultiplier = (short)(Direction == HeapDirection.Increasing
+            _directionMultiplier = (short)(direction == HeapDirection.Increasing
                                                ? 1
                                                : -1);
-            this.Direction = Direction;
+            this.Direction = direction;
             PriorityComparison = priorityComparison;
             Count = 0;
         }

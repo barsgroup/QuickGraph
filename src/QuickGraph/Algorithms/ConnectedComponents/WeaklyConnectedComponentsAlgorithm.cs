@@ -65,17 +65,17 @@ namespace QuickGraph.Algorithms.ConnectedComponents
             var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(VisitedGraph);
             try
             {
-                dfs.StartVertex += dfs_StartVertex;
-                dfs.TreeEdge += dfs_TreeEdge;
-                dfs.ForwardOrCrossEdge += dfs_ForwardOrCrossEdge;
+                dfs.StartVertex += DfsStartVertex;
+                dfs.TreeEdge += DfsTreeEdge;
+                dfs.ForwardOrCrossEdge += DfsForwardOrCrossEdge;
 
                 dfs.Compute();
             }
             finally
             {
-                dfs.StartVertex -= dfs_StartVertex;
-                dfs.TreeEdge -= dfs_TreeEdge;
-                dfs.ForwardOrCrossEdge -= dfs_ForwardOrCrossEdge;
+                dfs.StartVertex -= DfsStartVertex;
+                dfs.TreeEdge -= DfsTreeEdge;
+                dfs.ForwardOrCrossEdge -= DfsForwardOrCrossEdge;
             }
 
             // updating component numbers
@@ -91,7 +91,7 @@ namespace QuickGraph.Algorithms.ConnectedComponents
             _componentEquivalences.Clear();
         }
 
-        private void dfs_ForwardOrCrossEdge(TEdge e)
+        private void DfsForwardOrCrossEdge(TEdge e)
         {
             // we have touched another tree, updating count and current component
             var otherComponent = GetComponentEquivalence(Components[e.Target]);
@@ -111,7 +111,7 @@ namespace QuickGraph.Algorithms.ConnectedComponents
             }
         }
 
-        private void dfs_StartVertex(TVertex v)
+        private void DfsStartVertex(TVertex v)
         {
             // we are looking on a new tree
             _currentComponent = _componentEquivalences.Count;
@@ -120,7 +120,7 @@ namespace QuickGraph.Algorithms.ConnectedComponents
             Components.Add(v, _currentComponent);
         }
 
-        private void dfs_TreeEdge(TEdge e)
+        private void DfsTreeEdge(TEdge e)
         {
             // new edge, we store with the current component number
             Components.Add(e.Target, _currentComponent);

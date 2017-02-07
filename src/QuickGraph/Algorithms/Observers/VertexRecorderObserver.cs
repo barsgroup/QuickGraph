@@ -31,13 +31,13 @@ namespace QuickGraph.Algorithms.Observers
 
         public IDisposable Attach(IVertexTimeStamperAlgorithm<TVertex, TEdge> algorithm)
         {
-            algorithm.DiscoverVertex += algorithm_DiscoverVertex;
+            algorithm.DiscoverVertex += AlgorithmDiscoverVertex;
             return new DisposableAction(
-                () => algorithm.DiscoverVertex -= algorithm_DiscoverVertex
+                () => algorithm.DiscoverVertex -= AlgorithmDiscoverVertex
             );
         }
 
-        private void algorithm_DiscoverVertex(TVertex v)
+        private void AlgorithmDiscoverVertex(TVertex v)
         {
             _vertices.Add(v);
         }

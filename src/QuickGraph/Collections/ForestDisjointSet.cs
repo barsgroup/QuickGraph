@@ -163,7 +163,7 @@
             public Element(T value)
             {
 #if DEBUG
-                Id = _nextId++;
+                Id = nextId++;
 #endif
                 Parent = null;
                 Rank = 0;
@@ -173,7 +173,7 @@
 #if DEBUG
             public readonly int Id;
 
-            private static int _nextId;
+            private static int nextId;
 #endif
         }
     }
