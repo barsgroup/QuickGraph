@@ -6,12 +6,19 @@
         "QuickGraph": "4.0.0-*",
         "System.Threading.Tasks.Parallel": "4.3.0",
         "System.Xml.XPath": "4.0.1",
-        "xunit": "2.2.0-*"
+        "xunit": "2.2.0-*",
+        "dotnet-test-xunit": "2.2.0-*"
     },
 
     "frameworks": {
-        "netstandard1.6": {
-            "imports": "netcoreapp1.1"
+        "netcoreapp1.1": {
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.1.0"
+                }
+            }
         }
-    }
+    },
+    "testRunner": "xunit"
 }

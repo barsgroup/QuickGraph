@@ -223,7 +223,7 @@
 
             var method = dictionary.GetType().GetRuntimeProperty("Item").GetGetMethod();
 
-            return (Func<TKey, TValue>)method.CreateDelegate(dictionary.GetType());
+            return (Func<TKey, TValue>)method.CreateDelegate(typeof(Func<TKey, TValue>), dictionary);
         }
 
         /// <summary>Gets the vertex identity.</summary>
