@@ -2,6 +2,8 @@ namespace QuickGraph.Algorithms.Search
 {
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+
     using Xunit;
 
     public class BidirectionalDepthFirstSearchAlgorithmTest
@@ -20,13 +22,10 @@ namespace QuickGraph.Algorithms.Search
             }
         }
 
-        //[Fact]
-        //public void ComputeAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetBidirectionalGraphs(),
-        //        g =>
-        //            Compute(g));
-        //}
+        [Fact]
+        public void ComputeAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetBidirectionalGraphs(), Compute);
+        }
     }
 }

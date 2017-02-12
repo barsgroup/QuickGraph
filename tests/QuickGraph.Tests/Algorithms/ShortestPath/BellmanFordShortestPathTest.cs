@@ -4,32 +4,33 @@
     using System.Linq;
 
     using QuickGraph.Algorithms;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
     public class BellmanFordShortestPathTest
     {
-        //[Fact]
-        //public void AllSamples()
-        //{
-        //    foreach (var g in TestGraphFactory.GetAdjacencyGraphs())
-        //    {
-        //        if (g.IsVerticesEmpty)
-        //        {
-        //            continue;
-        //        }
+        [Fact]
+        public void AllSamples()
+        {
+            foreach (var g in TestGraphFactory.GetAdjacencyGraphs())
+            {
+                if (g.IsVerticesEmpty)
+                {
+                    continue;
+                }
 
-        //        var testPath = g.ShortestPathsBellmanFord(e => e.Source.Length - e.Target.Length, g.Vertices.First());
-        //        foreach (var i in g.Vertices)
-        //        {
-        //            IEnumerable<Edge<string>> es;
-        //            if (testPath(i, out es))
-        //            {
-        //                TestConsole.WriteLine("{0}: {1}", i, es.Count());
-        //            }
-        //        }
-        //    }
-        //}
+                var testPath = g.ShortestPathsBellmanFord(e => e.Source.Length - e.Target.Length, g.Vertices.First());
+                foreach (var i in g.Vertices)
+                {
+                    IEnumerable<Edge<string>> es;
+                    if (testPath(i, out es))
+                    {
+                        TestConsole.WriteLine("{0}: {1}", i, es.Count());
+                    }
+                }
+            }
+        }
 
         [Fact]
         public void Sample()

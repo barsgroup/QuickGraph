@@ -3,6 +3,8 @@ namespace QuickGraph.Algorithms.Search
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+
     using Xunit;
 
     public class UndirectedBreadthFirstAlgorithmSearchTest
@@ -149,16 +151,16 @@ namespace QuickGraph.Algorithms.Search
                 }
         }
 
-        //[Fact]
-        //public void UndirectedBreadthFirstSearchAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetUndirectedGraphs(),
-        //        g =>
-        //        {
-        //            foreach (var v in g.Vertices)
-        //                RunBfs(g, v);
-        //        });
-        //}
+        [Fact]
+        public void UndirectedBreadthFirstSearchAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetUndirectedGraphs(),
+                g =>
+                {
+                    foreach (var v in g.Vertices)
+                        RunBfs(g, v);
+                });
+        }
     }
 }

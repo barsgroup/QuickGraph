@@ -1,8 +1,5 @@
 ﻿namespace QuickGraph.Tests.Algorithms
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-
     using QuickGraph.Algorithms;
     using QuickGraph.Algorithms.Observers;
     using QuickGraph.Algorithms.Search;

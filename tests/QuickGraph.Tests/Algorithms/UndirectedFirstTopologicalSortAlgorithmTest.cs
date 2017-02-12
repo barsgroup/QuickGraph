@@ -1,6 +1,7 @@
 namespace QuickGraph.Algorithms
 {
     using QuickGraph.Algorithms.TopologicalSort;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -15,11 +16,11 @@ namespace QuickGraph.Algorithms
             topo.Compute();
         }
 
-        //[Fact]
-        //public void UndirectedFirstTopologicalSortAll()
-        //{
-        //    foreach (var g in TestGraphFactory.GetUndirectedGraphs())
-        //        Compute(g);
-        //}
+        [Fact]
+        public void UndirectedFirstTopologicalSortAll()
+        {
+            foreach (var g in TestGraphFactory.GetUndirectedGraphs())
+                Compute(g);
+        }
     }
 }

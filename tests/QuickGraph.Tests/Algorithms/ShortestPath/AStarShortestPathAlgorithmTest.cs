@@ -4,6 +4,7 @@ namespace QuickGraph.Algorithms.ShortestPath
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
     using QuickGraph.Tests.Traits;
 
     using Xunit;
@@ -31,18 +32,18 @@ namespace QuickGraph.Algorithms.ShortestPath
             Verify(algo, predecessors);
         }
 
-        //[Fact]
-        //[TestCategory(TestCategories.LongRunning)]
-        //public void AStartAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            foreach (var root in g.Vertices)
-        //                AStar(g, root);
-        //        });
-        //}
+        [Fact]
+        [TestCategory(TestCategories.LongRunning)]
+        public void AStartAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    foreach (var root in g.Vertices)
+                        AStar(g, root);
+                });
+        }
 
         private static void Verify<TVertex, TEdge>(
             AStarShortestPathAlgorithm<TVertex, TEdge> algo,

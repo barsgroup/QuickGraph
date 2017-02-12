@@ -44,14 +44,7 @@
         /// <value>
         ///     <c>true</c> if this instance is edges empty; otherwise, <c>false</c>.
         /// </value>
-        public bool IsEdgesEmpty
-        {
-            [Pure]
-            get
-            {
-                return EdgeCount == 0;
-            }
-        }
+        public bool IsEdgesEmpty => EdgeCount == 0;
 
         /// <summary>Gets the edge count.</summary>
         /// <value>The edge count.</value>
@@ -59,16 +52,7 @@
 
         /// <summary>Gets the edges.</summary>
         /// <value>The edges.</value>
-        public virtual IEnumerable<TEdge> Edges
-        {
-            [Pure]
-            get
-            {
-                foreach (var edges in _vertexEdges.Values)
-                foreach (var edge in edges)
-                    yield return edge;
-            }
-        }
+        public virtual IEnumerable<TEdge> Edges => _vertexEdges.Values.SelectMany(edges => edges);
 
         public AdjacencyGraph()
             : this(true)
@@ -117,12 +101,9 @@
         /// <returns>true if the edge was added; false if it was already part of the graph</returns>
         public virtual bool AddEdge(TEdge e)
         {
-            if (!AllowParallelEdges)
+            if (!AllowParallelEdges && ContainsEdge(e.Source, e.Target))
             {
-                if (ContainsEdge(e.Source, e.Target))
-                {
-                    return false;
-                }
+                return false;
             }
             _vertexEdges[e.Source].Add(e);
             EdgeCount++;
@@ -132,16 +113,7 @@
             return true;
         }
 
-        public int AddEdgeRange(IEnumerable<TEdge> edges)
-        {
-            var count = 0;
-            foreach (var edge in edges)
-                if (AddEdge(edge))
-                {
-                    count++;
-                }
-            return count;
-        }
+        public int AddEdgeRange(IEnumerable<TEdge> edges) => edges.Count(AddEdge);
 
         public virtual bool AddVertex(TVertex v)
         {
@@ -150,28 +122,16 @@
                 return false;
             }
 
-            if (EdgeCapacity > 0)
-            {
-                _vertexEdges.Add(v, new EdgeList<TVertex, TEdge>(EdgeCapacity));
-            }
-            else
-            {
-                _vertexEdges.Add(v, new EdgeList<TVertex, TEdge>());
-            }
+            var edgeList = EdgeCapacity > 0
+                               ? new EdgeList<TVertex, TEdge>(EdgeCapacity)
+                               : new EdgeList<TVertex, TEdge>();
+
+            _vertexEdges.Add(v, edgeList);
             OnVertexAdded(v);
             return true;
         }
 
-        public virtual int AddVertexRange(IEnumerable<TVertex> vertices)
-        {
-            var count = 0;
-            foreach (var v in vertices)
-                if (AddVertex(v))
-                {
-                    count++;
-                }
-            return count;
-        }
+        public virtual int AddVertexRange(IEnumerable<TVertex> vertices) => vertices.Count(AddVertex);
 
         public virtual bool AddVerticesAndEdge(TEdge e)
         {
@@ -183,10 +143,7 @@
         /// <summary>Adds a range of edges to the graph</summary>
         /// <param name="edges"></param>
         /// <returns>the count edges that were added</returns>
-        public int AddVerticesAndEdgeRange(IEnumerable<TEdge> edges)
-        {
-            return edges.Count(AddVerticesAndEdge);
-        }
+        public int AddVerticesAndEdgeRange(IEnumerable<TEdge> edges) => edges.Count(AddVerticesAndEdge);
 
         public void Clear()
         {
@@ -212,52 +169,24 @@
         public bool ContainsEdge(TVertex source, TVertex target)
         {
             IEnumerable<TEdge> outEdges;
-            if (!TryGetOutEdges(source, out outEdges))
-            {
-                return false;
-            }
-            foreach (var outEdge in outEdges)
-                if (outEdge.Target.Equals(target))
-                {
-                    return true;
-                }
-            return false;
+            return TryGetOutEdges(source, out outEdges) && outEdges.Any(outEdge => outEdge.Target.Equals(target));
         }
 
-        [Pure]
         public bool ContainsEdge(TEdge edge)
         {
             IEdgeList<TVertex, TEdge> edges;
-            return
-                _vertexEdges.TryGetValue(edge.Source, out edges) &&
-                edges.Contains(edge);
+            return _vertexEdges.TryGetValue(edge.Source, out edges) && edges.Contains(edge);
         }
 
-        [Pure]
-        public bool ContainsVertex(TVertex v)
-        {
-            return _vertexEdges.ContainsKey(v);
-        }
+        public bool ContainsVertex(TVertex v) => _vertexEdges.ContainsKey(v);
 
-        public bool IsOutEdgesEmpty(TVertex v)
-        {
-            return _vertexEdges[v].Count == 0;
-        }
+        public bool IsOutEdgesEmpty(TVertex v) => _vertexEdges[v].Count == 0;
 
-        public int OutDegree(TVertex v)
-        {
-            return _vertexEdges[v].Count;
-        }
+        public int OutDegree(TVertex v) => _vertexEdges[v].Count;
 
-        public TEdge OutEdge(TVertex v, int index)
-        {
-            return _vertexEdges[v][index];
-        }
+        public TEdge OutEdge(TVertex v, int index) => _vertexEdges[v][index];
 
-        public virtual IEnumerable<TEdge> OutEdges(TVertex v)
-        {
-            return _vertexEdges[v];
-        }
+        public virtual IEnumerable<TEdge> OutEdges(TVertex v) => _vertexEdges[v];
 
         public virtual bool RemoveEdge(TEdge e)
         {
@@ -371,10 +300,7 @@
         }
 
         [Pure]
-        public bool TryGetEdge(
-            TVertex source,
-            TVertex target,
-            out TEdge edge)
+        public bool TryGetEdge(TVertex source, TVertex target, out TEdge edge)
         {
             IEdgeList<TVertex, TEdge> edgeList;
             if (_vertexEdges.TryGetValue(source, out edgeList) &&
@@ -427,15 +353,9 @@
             return false;
         }
 
-        protected virtual void OnEdgeAdded(TEdge args)
-        {
-            EdgeAdded?.Invoke(args);
-        }
+        protected virtual void OnEdgeAdded(TEdge args) => EdgeAdded?.Invoke(args);
 
-        protected virtual void OnEdgeRemoved(TEdge args)
-        {
-            EdgeRemoved?.Invoke(args);
-        }
+        protected virtual void OnEdgeRemoved(TEdge args) => EdgeRemoved?.Invoke(args);
 
         protected virtual void OnVertexAdded(TVertex args)
         {
@@ -457,10 +377,7 @@
             Contract.Invariant(EdgeCount >= 0);
         }
 
-        private void OnCleared(EventArgs e)
-        {
-            Cleared?.Invoke(this, e);
-        }
+        private void OnCleared(EventArgs e) => Cleared?.Invoke(this, e);
 
         public event EventHandler Cleared;
 

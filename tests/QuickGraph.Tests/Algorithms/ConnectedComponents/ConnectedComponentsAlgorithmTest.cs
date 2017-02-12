@@ -3,6 +3,8 @@
     using System.Linq;
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+    using QuickGraph.Tests.Traits;
 
     using Xunit;
 
@@ -32,20 +34,20 @@
                 Assert.Equal(dfs.Components[edge.Source], dfs.Components[edge.Target]);
         }
 
-        //[Fact]
-        //[TestCategories(TestCategories.LongRunning)]
-        //public void ConnectedComponentsAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetUndirectedGraphs(),
-        //        g =>
-        //        {
-        //            while (g.EdgeCount > 0)
-        //            {
-        //                Compute(g);
-        //                g.RemoveEdge(g.Edges.First());
-        //            }
-        //        });
-        //}
+        [Fact]
+        [TestCategory(TestCategories.LongRunning)]
+        public void ConnectedComponentsAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetUndirectedGraphs(),
+                g =>
+                {
+                    while (g.EdgeCount > 0)
+                    {
+                        Compute(g);
+                        g.RemoveEdge(g.Edges.First());
+                    }
+                });
+        }
     }
 }

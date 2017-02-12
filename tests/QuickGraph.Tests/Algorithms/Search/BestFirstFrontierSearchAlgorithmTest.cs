@@ -9,39 +9,40 @@
     using QuickGraph.Algorithms.Observers;
     using QuickGraph.Algorithms.Search;
     using QuickGraph.Algorithms.ShortestPath;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
     public class BestFirstFrontierSearchAlgorithmTest
     {
-        //[Fact]
-        //public void BestFirstFrontierSearchAllGraphs()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetBidirectionalGraphs(),
-        //        RunSearch);
-        //}
+        [Fact]
+        public void BestFirstFrontierSearchAllGraphs()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetBidirectionalGraphs(),
+                RunSearch);
+        }
 
-        //[Fact]
-        //public void CompareBestFirstFrontierSearchAllGraphs()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetBidirectionalGraphs(),
-        //        g =>
-        //        {
-        //            if (g.VertexCount == 0)
-        //            {
-        //                return;
-        //            }
+        [Fact]
+        public void CompareBestFirstFrontierSearchAllGraphs()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetBidirectionalGraphs(),
+                g =>
+                {
+                    if (g.VertexCount == 0)
+                    {
+                        return;
+                    }
 
-        //            var root = g.Vertices.First();
-        //            foreach (var v in g.Vertices)
-        //                if (!root.Equals(v))
-        //                {
-        //                    CompareSearch(g, root, v);
-        //                }
-        //        });
-        //}
+                    var root = g.Vertices.First();
+                    foreach (var v in g.Vertices)
+                        if (!root.Equals(v))
+                        {
+                            CompareSearch(g, root, v);
+                        }
+                });
+        }
 
         public void CompareSearch<TVertex, TEdge>(
             IBidirectionalGraph<TVertex, TEdge> g,

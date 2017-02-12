@@ -4,6 +4,7 @@ namespace QuickGraph.Algorithms.ShortestPath
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -29,32 +30,33 @@ namespace QuickGraph.Algorithms.ShortestPath
             Verify(algo, predecessors);
         }
 
-        //[Fact]
-        //public void DijkstraAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            foreach (var root in g.Vertices)
-        //                Dijkstra(g, root);
-        //        });
-        //}
+        [Fact]
+        public void DijkstraAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    foreach (var root in g.Vertices)
+                        Dijkstra(g, root);
+                });
+        }
 
-        //[Fact]
-        //public void Repro12359()
-        //{
-        //    var g = TestGraphFactory.LoadGraph("repro12359.graphml");
-        //    var i = 0;
-        //    foreach (var v in g.Vertices)
-        //    {
-        //        if (i++ > 5)
-        //        {
-        //            break;
-        //        }
-        //        Dijkstra(g, v);
-        //    }
-        //}
+        [Fact]
+        public void Repro12359()
+        {
+            var g = new AdjacencyGraph<string, Edge<string>>();
+            TestGraphFactory.LoadGraph("netcoreapp1.1/GraphML/repro12359.graphml", g);
+            var i = 0;
+            foreach (var v in g.Vertices)
+            {
+                if (i++ > 5)
+                {
+                    break;
+                }
+                Dijkstra(g, v);
+            }
+        }
 
         private static void Verify<TVertex, TEdge>(
             DijkstraShortestPathAlgorithm<TVertex, TEdge> algo,

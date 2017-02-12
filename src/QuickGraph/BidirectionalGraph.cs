@@ -81,10 +81,7 @@
         public static Type EdgeType
         {
             [Pure]
-            get
-            {
-                return typeof(TEdge);
-            }
+            get { return typeof(TEdge); }
         }
 
         public int EdgeCapacity
@@ -109,28 +106,19 @@
         public bool IsVerticesEmpty
         {
             [Pure]
-            get
-            {
-                return _vertexOutEdges.Count == 0;
-            }
+            get { return _vertexOutEdges.Count == 0; }
         }
 
         public int VertexCount
         {
             [Pure]
-            get
-            {
-                return _vertexOutEdges.Count;
-            }
+            get { return _vertexOutEdges.Count; }
         }
 
         public virtual IEnumerable<TVertex> Vertices
         {
             [Pure]
-            get
-            {
-                return _vertexOutEdges.Keys;
-            }
+            get { return _vertexOutEdges.Keys; }
         }
 
         [Pure]

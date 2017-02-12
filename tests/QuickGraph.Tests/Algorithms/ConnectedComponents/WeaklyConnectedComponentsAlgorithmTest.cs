@@ -2,6 +2,8 @@ namespace QuickGraph.Algorithms.ConnectedComponents
 {
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+
     using Xunit;
 
     public class WeaklyConnectedComponentsAlgorithmTest
@@ -31,13 +33,10 @@ namespace QuickGraph.Algorithms.ConnectedComponents
                 Assert.Equal(dfs.Components[edge.Source], dfs.Components[edge.Target]);
         }
 
-        //[Fact]
-        //public void WeaklyConnectedComponentsAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            Compute(g));
-        //}
+        [Fact]
+        public void WeaklyConnectedComponentsAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetAdjacencyGraphs(), Compute);
+        }
     }
 }

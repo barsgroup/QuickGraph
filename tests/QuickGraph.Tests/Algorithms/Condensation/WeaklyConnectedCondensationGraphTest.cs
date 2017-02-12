@@ -3,19 +3,17 @@ namespace QuickGraph.Algorithms.Condensation
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
 
     using Xunit;
 
     public class WeaklyConnectedCondensationGraphAlgorithmTest
     {
-        //[Fact]
-        //public void WeaklyConnectedCondensatAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            WeaklyConnectedCondensate(g));
-        //}
+        [Fact]
+        public void WeaklyConnectedCondensatAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetAdjacencyGraphs(), WeaklyConnectedCondensate);
+        }
 
         public void WeaklyConnectedCondensate<TVertex, TEdge>(IVertexAndEdgeListGraph<TVertex, TEdge> g)
             where TEdge : IEdge<TVertex>

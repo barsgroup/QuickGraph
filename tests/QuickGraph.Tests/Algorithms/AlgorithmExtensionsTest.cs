@@ -4,6 +4,7 @@
     using System.Linq;
 
     using QuickGraph.Algorithms;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -25,12 +26,12 @@
             Assert.Equal("A", roots[0]);
         }
 
-        //[Fact]
-        //public void AllAdjacencyGraphRoots()
-        //{
-        //    foreach (var g in TestGraphFactory.GetAdjacencyGraphs())
-        //        Roots(g);
-        //}
+        [Fact]
+        public void AllAdjacencyGraphRoots()
+        {
+            foreach (var g in TestGraphFactory.GetAdjacencyGraphs())
+                Roots(g);
+        }
 
         public void Roots<T>(IVertexAndEdgeListGraph<T, Edge<T>> g)
         {

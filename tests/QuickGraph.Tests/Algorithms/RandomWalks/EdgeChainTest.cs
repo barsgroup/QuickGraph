@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -22,12 +23,12 @@
             }
         }
 
-        //[Fact]
-        //public void GenerateAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        Generate);
-        //}
+        [Fact]
+        public void GenerateAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                Generate);
+        }
     }
 }

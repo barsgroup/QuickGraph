@@ -1,13 +1,19 @@
 {
     "version": "1.0.0-*",
 
+    "buildOptions": {
+        "copyToOutput": {
+            "include": "GraphML/**/*"
+        }
+    },
     "dependencies": {
         "NETStandard.Library": "1.6.1",
         "QuickGraph": "4.0.0-*",
         "System.Threading.Tasks.Parallel": "4.3.0",
         "System.Xml.XPath": "4.0.1",
         "xunit": "2.2.0-*",
-        "dotnet-test-xunit": "2.2.0-*"
+        "dotnet-test-xunit": "2.2.0-*",
+        "QuickGraph.Serialization": "1.0.0-*"
     },
 
     "frameworks": {

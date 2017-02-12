@@ -11,10 +11,7 @@
 
         /// <summary>Gets the frequency.</summary>
         /// <value>The frequency.</value>
-        public static long Frequency
-        {
-            get { return frequency; }
-        }
+        public static long Frequency => frequency;
 
         /// <summary>Gets the current ticks value.</summary>
         /// <value>The now.</value>

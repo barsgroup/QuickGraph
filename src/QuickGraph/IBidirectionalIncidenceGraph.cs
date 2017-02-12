@@ -13,10 +13,8 @@
         : IIncidenceGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        ///     Gets the degree of <paramref name="v" />, i.e. the sum of the out-degree and in-degree of
-        ///     <paramref name="v" />.
-        /// </summary>
+        /// <summary>Gets the degree of <paramref name="v" />, i.e. the sum of the out-degree and in-degree of
+        ///     <paramref name="v" />.</summary>
         /// <param name="v">The vertex</param>
         /// <returns>The sum of OutDegree and InDegree of <paramref name="v" /></returns>
         [Pure]

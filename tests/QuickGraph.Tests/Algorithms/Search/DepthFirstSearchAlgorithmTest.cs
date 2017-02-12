@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+
     using Xunit;
 
     public class DepthFirstAlgorithmSearchTest
@@ -85,14 +87,11 @@
                 }
         }
 
-        //[Fact]
-        //public void DepthFirstSearchAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            DepthFirstSearch(g));
-        //}
+        [Fact]
+        public void DepthFirstSearchAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetAdjacencyGraphs(), DepthFirstSearch);
+        }
 
         private static bool IsDescendant<TVertex>(
             Dictionary<TVertex, TVertex> parents,

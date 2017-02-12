@@ -41,7 +41,11 @@
             Contract.Requires(!edge.Source.Equals(edge.Target));
             Contract.Requires(edge.Source.Equals(vertex) || edge.Target.Equals(vertex));
             Contract.Ensures(Contract.Result<TVertex>() != null);
-            Contract.Ensures(Contract.Result<TVertex>().Equals(edge.Source.Equals(vertex) ? edge.Target : edge.Source));
+            Contract.Ensures(
+                Contract.Result<TVertex>().Equals(
+                    edge.Source.Equals(vertex)
+                        ? edge.Target
+                        : edge.Source));
 
             return edge.Source.Equals(vertex)
                        ? edge.Target
@@ -214,7 +218,7 @@
             Contract.Requires(predecessors != null);
             Contract.Requires(root != null);
             Contract.Requires(vertex != null);
-            Contract.Requires( typeof(TEdge).GetTypeInfo().IsValueType || predecessors.Values.All(e => e != null));
+            Contract.Requires(typeof(TEdge).GetTypeInfo().IsValueType || predecessors.Values.All(e => e != null));
 
             var current = vertex;
             if (root.Equals(current))
@@ -327,7 +331,9 @@
             Contract.Requires(predecessors != null);
             Contract.Requires(v != null);
             Contract.Requires(typeof(TEdge).GetTypeInfo().IsValueType || predecessors.Values.All(e => e != null));
-            Contract.Ensures( !Contract.Result<bool>() || Contract.ValueAtReturn(out result) != null && (typeof(TEdge).GetTypeInfo().IsValueType || Contract.ValueAtReturn(out result).All(e => e != null)));
+            Contract.Ensures(
+                !Contract.Result<bool>() ||
+                Contract.ValueAtReturn(out result) != null && (typeof(TEdge).GetTypeInfo().IsValueType || Contract.ValueAtReturn(out result).All(e => e != null)));
 
             var path = new List<TEdge>();
 

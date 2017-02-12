@@ -4,6 +4,7 @@ namespace QuickGraph.Algorithms.ShortestPath
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -63,17 +64,17 @@ namespace QuickGraph.Algorithms.ShortestPath
                 }
         }
 
-        //[Fact]
-        //public void DagShortestPathAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            Compute(g);
-        //            ComputeCriticalPath(g);
-        //        });
-        //}
+        [Fact]
+        public void DagShortestPathAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    Compute(g);
+                    ComputeCriticalPath(g);
+                });
+        }
 
         private void Search<TVertex, TEdge>(
             IVertexListGraph<TVertex, TEdge> g,

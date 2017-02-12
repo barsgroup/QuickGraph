@@ -7,7 +7,7 @@
 
     using Xunit;
 
-    public partial class FibonacciHeapTests
+    public class FibonacciHeapTests
     {
         [Fact]
         public void ChangeKeyToSelf()
@@ -30,7 +30,7 @@
                 }
                 if (lastValue < value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -66,7 +66,7 @@
                 }
                 if (lastValue < value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -95,7 +95,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -126,6 +126,7 @@
                     lastValue = value.Key;
                 }
                 Assert.False(lastValue > value.Key, "Heap condition has been violated");
+
                 //Assert.NotEqual(deletedCell, value);
                 lastValue = value.Key;
                 count--;
@@ -152,7 +153,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -181,7 +182,7 @@
                 }
                 if (lastValue < value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -210,7 +211,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -243,7 +244,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -364,7 +365,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -406,7 +407,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -448,7 +449,7 @@
                 }
                 if (lastValue > value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;
@@ -559,7 +560,7 @@
                 }
                 if (lastValue < value.Key)
                 {
-                    Assert.False(true,"Heap condition has been violated");
+                    Assert.False(true, "Heap condition has been violated");
                 }
                 lastValue = value.Key;
                 count--;

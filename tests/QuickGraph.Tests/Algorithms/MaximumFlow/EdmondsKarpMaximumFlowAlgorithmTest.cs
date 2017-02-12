@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -24,19 +25,19 @@
             }
         }
 
-        //[Fact]
-        //public void EdmondsKarpMaxFlowAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            if (g.VertexCount > 0)
-        //            {
-        //                EdmondsKarpMaxFlow(g, (source, target) => new Edge<string>(source, target));
-        //            }
-        //        });
-        //}
+        [Fact]
+        public void EdmondsKarpMaxFlowAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    if (g.VertexCount > 0)
+                    {
+                        EdmondsKarpMaxFlow(g, (source, target) => new Edge<string>(source, target));
+                    }
+                });
+        }
 
         private static double RunMaxFlowAlgorithm<TVertex, TEdge>(IMutableVertexAndEdgeListGraph<TVertex, TEdge> g,
                                                                   EdgeFactory<TVertex, TEdge> edgeFactory,

@@ -2,24 +2,26 @@
 {
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+
     using Xunit;
 
     public class CyclePoppingRandomTreeAlgorithmTest
     {
-        //[Fact]
-        //public void CyclePoppingRandomTreeAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            foreach (var v in g.Vertices)
-        //            {
-        //                var target = new CyclePoppingRandomTreeAlgorithm<string, Edge<string>>(g);
-        //                target.Compute(v);
-        //            }
-        //        });
-        //}
+        [Fact]
+        public void CyclePoppingRandomTreeAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    foreach (var v in g.Vertices)
+                    {
+                        var target = new CyclePoppingRandomTreeAlgorithm<string, Edge<string>>(g);
+                        target.Compute(v);
+                    }
+                });
+        }
 
         [Fact]
         public void IsolatedVertices()

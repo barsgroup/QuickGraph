@@ -4,6 +4,7 @@
     using System.Text;
 
     using QuickGraph.Algorithms.TopologicalSort;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -120,12 +121,12 @@
             topo.Compute();
         }
 
-        //[Fact]
-        //public void TopologicalSortAll()
-        //{
-        //    foreach (var g in TestGraphFactory.GetAdjacencyGraphs())
-        //        SortCyclic(g);
-        //}
+        [Fact]
+        public void TopologicalSortAll()
+        {
+            foreach (var g in TestGraphFactory.GetAdjacencyGraphs())
+                SortCyclic(g);
+        }
     }
 
     public class Letter

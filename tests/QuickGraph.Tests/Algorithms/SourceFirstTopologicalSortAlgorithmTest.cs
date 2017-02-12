@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.TopologicalSort;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -21,13 +22,13 @@
             }
         }
 
-        //[Fact]
-        //public void SortAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            Sort(g));
-        //}
+        [Fact]
+        public void SortAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                    Sort(g));
+        }
     }
 }

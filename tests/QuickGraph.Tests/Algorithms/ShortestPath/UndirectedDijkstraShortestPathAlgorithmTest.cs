@@ -4,6 +4,7 @@ namespace QuickGraph.Algorithms.ShortestPath
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
     using QuickGraph.Tests.Traits;
 
     using Xunit;
@@ -60,24 +61,24 @@ namespace QuickGraph.Algorithms.ShortestPath
             Verify(algo, predecessors);
         }
 
-        //[Fact]
-        //public void UndirectedDijkstraAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetUndirectedGraphs(),
-        //        g =>
-        //        {
-        //            var cut = 0;
-        //            foreach (var root in g.Vertices)
-        //            {
-        //                if (cut++ > 10)
-        //                {
-        //                    break;
-        //                }
-        //                UndirectedDijkstra(g, root);
-        //            }
-        //        });
-        //}
+        [Fact]
+        public void UndirectedDijkstraAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetUndirectedGraphs(),
+                g =>
+                {
+                    var cut = 0;
+                    foreach (var root in g.Vertices)
+                    {
+                        if (cut++ > 10)
+                        {
+                            break;
+                        }
+                        UndirectedDijkstra(g, root);
+                    }
+                });
+        }
 
         private static void Verify<TVertex, TEdge>(
             UndirectedDijkstraShortestPathAlgorithm<TVertex, TEdge> algo,

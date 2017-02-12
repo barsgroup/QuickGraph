@@ -3,9 +3,11 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    //using QuickGraph.Serialization;
+    using QuickGraph.Serialization;
 
     using Xunit;
+
+    //using QuickGraph.Serialization;
 
     public class StronglyConnectedCondensationGraphAlgorithmTest
     {
@@ -21,14 +23,13 @@
             CheckDag(g, cg);
         }
 
-        //[Fact]
-        //public void StronglyConnectedCondensateAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            StronglyConnectedCondensate(g));
-        //}
+        [Fact]
+        public void StronglyConnectedCondensateAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                StronglyConnectedCondensate);
+        }
 
         private void CheckComponentCount<TVertex, TEdge>(
             IVertexAndEdgeListGraph<TVertex, TEdge> g,

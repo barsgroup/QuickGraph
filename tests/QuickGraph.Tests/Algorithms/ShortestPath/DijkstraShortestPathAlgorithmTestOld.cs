@@ -113,9 +113,9 @@
             var dij = new DijkstraShortestPathAlgorithm<int, Edge<int>>(g, e => 1);
             dij.Compute(1);
 
-            Assert.Equal<double>(0, dij.Distances[1]);
-            Assert.Equal<double>(1, dij.Distances[2]);
-            Assert.Equal<double>(2, dij.Distances[3]);
+            Assert.Equal(0, dij.Distances[1]);
+            Assert.Equal(1, dij.Distances[2]);
+            Assert.Equal(2, dij.Distances[3]);
         }
     }
 

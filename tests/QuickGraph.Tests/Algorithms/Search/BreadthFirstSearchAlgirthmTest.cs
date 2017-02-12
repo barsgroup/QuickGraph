@@ -3,21 +3,23 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
+
     using Xunit;
 
     public class BreadthFirstAlgorithmSearchTest
     {
-        //[Fact]
-        //public void BreadthFirstSearchAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            foreach (var v in g.Vertices)
-        //                RunBfs(g, v);
-        //        });
-        //}
+        [Fact]
+        public void BreadthFirstSearchAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    foreach (var v in g.Vertices)
+                        RunBfs(g, v);
+                });
+        }
 
         public void RunBfs<TVertex, TEdge>(IVertexAndEdgeListGraph<TVertex, TEdge> g, TVertex sourceVertex)
             where TEdge : IEdge<TVertex>

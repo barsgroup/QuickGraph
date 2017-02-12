@@ -212,7 +212,7 @@
             _directionMultiplier = (short)(direction == HeapDirection.Increasing
                                                ? 1
                                                : -1);
-            this.Direction = direction;
+            Direction = direction;
             PriorityComparison = priorityComparison;
             Count = 0;
         }

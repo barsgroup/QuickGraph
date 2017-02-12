@@ -110,7 +110,7 @@
             TVertex rootVertex;
             if (!TryGetRootVertex(out rootVertex))
             {
-                foreach (var root in AlgorithmExtensions.Roots(VisitedGraph))
+                foreach (var root in VisitedGraph.Roots())
                     EnqueueRoot(root);
             }
             else // enqueue select root only

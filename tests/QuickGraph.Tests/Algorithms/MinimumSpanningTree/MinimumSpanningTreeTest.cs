@@ -5,10 +5,12 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Xml;
+    using System.Xml.XPath;
 
     using QuickGraph.Algorithms;
     using QuickGraph.Algorithms.MinimumSpanningTree;
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
     using QuickGraph.Tests.Traits;
 
     using Xunit;
@@ -51,14 +53,11 @@
             AssertMinimumSpanningTree(g, kruskal);
         }
 
-        //[Fact]
-        //public void KruskalMinimumSpanningTreeAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetUndirectedGraphs(),
-        //        g =>
-        //            Kruskal(g));
-        //}
+        [Fact]
+        public void KruskalMinimumSpanningTreeAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetUndirectedGraphs(), Kruskal);
+        }
 
         public void Prim<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> g)
             where TEdge : IEdge<TVertex>
@@ -67,7 +66,7 @@
             foreach (var e in g.Edges)
                 distances[e] = g.AdjacentDegree(e.Source) + 1;
 
-            var edges = AlgorithmExtensions.MinimumSpanningTreePrim(g, e => distances[e]);
+            var edges = g.MinimumSpanningTreePrim(e => distances[e]);
             AssertSpanningTree(g, edges);
         }
 
@@ -119,70 +118,64 @@
             Assert.Equal(9, cost);
         }
 
-        //[Fact]
-        //[WorkItem(12273)]
-        //public void Prim12273()
-        //{
-        //    //  var doc = new XPathDocument("repro12273.xml");
+        [Fact]
+        [WorkItem(12273)]
+        public void Prim12273()
+        {
+            var doc = new XPathDocument("netcoreapp1.1/GraphML/repro12273.xml");
 
-        //    //var ug = doc.DeserializeFromXml(
-        //    //    "graph", "node", "edge",
-        //    //    nav => new UndirectedGraph<string, TaggedEdge<string, double>>(),
-        //    //    nav => nav.GetAttribute("id", ""),
-        //    //    nav => new TaggedEdge<string, double>(
-        //    //        nav.GetAttribute("source", ""),
-        //    //        nav.GetAttribute("target", ""),
-        //    //        int.Parse(nav.GetAttribute("weight", ""))
-        //    //        )
-        //    //    );
-        //    var ug = XmlReader.Create("repro12273.xml").DeserializeFromXml(
-        //        "graph",
-        //        "node",
-        //        "edge",
-        //        "",
-        //        reader => new UndirectedGraph<string, TaggedEdge<string, double>>(),
-        //        reader => reader.GetAttribute("id"),
-        //        reader => new TaggedEdge<string, double>(
-        //            reader.GetAttribute("source"),
-        //            reader.GetAttribute("target"),
-        //            int.Parse(reader.GetAttribute("weight"))
-        //        )
-        //    );
+            //var ug = doc.DeserializeFromXml(
+            //    "graph", "node", "edge",
+            //    nav => new UndirectedGraph<string, TaggedEdge<string, double>>(),
+            //    nav => nav.GetAttribute("id", ""),
+            //    nav => new TaggedEdge<string, double>(
+            //        nav.GetAttribute("source", ""),
+            //        nav.GetAttribute("target", ""),
+            //        int.Parse(nav.GetAttribute("weight", ""))
+            //        )
+            //    );
+            var ug = XmlReader.Create("netcoreapp1.1/GraphML/repro12273.xml").DeserializeFromXml(
+                "graph",
+                "node",
+                "edge",
+                "",
+                reader => new UndirectedGraph<string, TaggedEdge<string, double>>(),
+                reader => reader.GetAttribute("id"),
+                reader => new TaggedEdge<string, double>(
+                    reader.GetAttribute("source"),
+                    reader.GetAttribute("target"),
+                    int.Parse(reader.GetAttribute("weight"))
+                )
+            );
 
-        //    //MsaglGraphExtensions.ShowMsaglGraph(ug);
-        //    var prim = ug.MinimumSpanningTreePrim(e => e.Tag).ToList();
-        //    var pcost = prim.Sum(e => e.Tag);
-        //    TestConsole.WriteLine("prim cost {0}", pcost);
-        //    foreach (var e in prim)
-        //        TestConsole.WriteLine(e);
+            //MsaglGraphExtensions.ShowMsaglGraph(ug);
+            var prim = ug.MinimumSpanningTreePrim(e => e.Tag).ToList();
+            var pcost = prim.Sum(e => e.Tag);
+            TestConsole.WriteLine("prim cost {0}", pcost);
+            foreach (var e in prim)
+                TestConsole.WriteLine(e);
 
-        //    var kruskal = ug.MinimumSpanningTreeKruskal(e => e.Tag).ToList();
-        //    var kcost = kruskal.Sum(e => e.Tag);
-        //    TestConsole.WriteLine("kruskal cost {0}", kcost);
-        //    foreach (var e in kruskal)
-        //        TestConsole.WriteLine(e);
+            var kruskal = ug.MinimumSpanningTreeKruskal(e => e.Tag).ToList();
+            var kcost = kruskal.Sum(e => e.Tag);
+            TestConsole.WriteLine("kruskal cost {0}", kcost);
+            foreach (var e in kruskal)
+                TestConsole.WriteLine(e);
 
-        //    Assert.Equal(pcost, 63);
-        //    Assert.Equal(pcost, kcost);
-        //}
+            Assert.Equal(pcost, 63);
+            Assert.Equal(pcost, kcost);
+        }
 
-        //[Fact]
-        //public void PrimKruskalMinimumSpanningTreeAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetUndirectedGraphs(),
-        //        g =>
-        //            CompareRoot(g));
-        //}
+        [Fact]
+        public void PrimKruskalMinimumSpanningTreeAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetUndirectedGraphs(), g => CompareRoot(g));
+        }
 
-        //[Fact]
-        //public void PrimMinimumSpanningTreeAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetUndirectedGraphs(),
-        //        g =>
-        //            Prim(g));
-        //}
+        [Fact]
+        public void PrimMinimumSpanningTreeAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetUndirectedGraphs(), Prim);
+        }
 
         private static void AssertAreEqual<TVertex, TEdge>(
             IDictionary<TVertex, TEdge> left,

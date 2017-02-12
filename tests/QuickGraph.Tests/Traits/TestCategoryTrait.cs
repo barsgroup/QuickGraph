@@ -22,7 +22,7 @@
     [TraitDiscoverer("QuickGraph.Tests.Traits.CategoryDiscoverer", "QuickGraph.Tests")]
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class TestCategoryAttribute : Attribute,
-                                     ITraitAttribute
+                                         ITraitAttribute
     {
         public TestCategoryAttribute(string category)
         {

@@ -3,19 +3,17 @@
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.Observers;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
     public class RandomWalkAlgorithmTest
     {
-        //[Fact]
-        //public void RoundRobinAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            RoundRobinTest(g));
-        //}
+        [Fact]
+        public void RoundRobinAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetAdjacencyGraphs(), RoundRobinTest);
+        }
 
         public void RoundRobinTest<TVertex, TEdge>(IVertexListGraph<TVertex, TEdge> g)
             where TEdge : IEdge<TVertex>

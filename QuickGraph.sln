@@ -3,17 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{22937B93-4129-4F68-AB14-F7AFE020BA8F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{22937B93-4129-4F68-AB14-F7AFE020BA8F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7A2A3C07-B652-4759-AFC4-49378D764784}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickGraph.Graphviz", "QuickGraph.Graphviz\QuickGraph.Graphviz.csproj", "{595D6322-637A-4A36-97F1-D53F3F9ECEA7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickGraph.Samples", "QuickGraph.Samples\QuickGraph.Samples.csproj", "{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}"
-EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph", "src\QuickGraph\QuickGraph.xproj", "{62665C64-6DFB-4898-9422-0B03EE2BCC81}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph.Data", "src\QuickGraph.Data\QuickGraph.Data.xproj", "{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph.Tests", "tests\QuickGraph.Tests\QuickGraph.Tests.xproj", "{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}"
 EndProject
@@ -22,53 +16,96 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph.Serialization", "src\QuickGraph.Serialization\QuickGraph.Serialization.xproj", "{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph.Graphviz", "src\QuickGraph.Graphviz\QuickGraph.Graphviz.xproj", "{DC6BD131-277C-478C-AFB1-AA502169916E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{322A72C0-7F30-4853-8BB0-3590ACF4805C}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph.Samples", "examples\QuickGraph.Samples\QuickGraph.Samples.xproj", "{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QuickGraph.Parallels", "src\QuickGraph.Parallels\QuickGraph.Parallels.xproj", "{C02241A0-EF55-4335-9545-BBBD223D8AAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		DebugContracts|Any CPU = DebugContracts|Any CPU
 		Release|Any CPU = Release|Any CPU
 		Release20|Any CPU = Release20|Any CPU
+		ReleaseContractsReferences|Any CPU = ReleaseContractsReferences|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7}.Release20|Any CPU.ActiveCfg = Release20|Any CPU
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7}.Release20|Any CPU.Build.0 = Release20|Any CPU
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}.Release20|Any CPU.ActiveCfg = Release|Any CPU
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD}.Release20|Any CPU.Build.0 = Release|Any CPU
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.DebugContracts|Any CPU.ActiveCfg = Debug|Any CPU
+		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.DebugContracts|Any CPU.Build.0 = Debug|Any CPU
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.Release20|Any CPU.ActiveCfg = Release|Any CPU
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.Release20|Any CPU.Build.0 = Release|Any CPU
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}.Release20|Any CPU.ActiveCfg = Release|Any CPU
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA}.Release20|Any CPU.Build.0 = Release|Any CPU
+		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.ReleaseContractsReferences|Any CPU.ActiveCfg = Release|Any CPU
+		{62665C64-6DFB-4898-9422-0B03EE2BCC81}.ReleaseContractsReferences|Any CPU.Build.0 = Release|Any CPU
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.DebugContracts|Any CPU.ActiveCfg = Debug|Any CPU
+		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.DebugContracts|Any CPU.Build.0 = Debug|Any CPU
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.Release20|Any CPU.ActiveCfg = Release|Any CPU
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.Release20|Any CPU.Build.0 = Release|Any CPU
+		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.ReleaseContractsReferences|Any CPU.ActiveCfg = Release|Any CPU
+		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0}.ReleaseContractsReferences|Any CPU.Build.0 = Release|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.DebugContracts|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.DebugContracts|Any CPU.Build.0 = Debug|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.Release20|Any CPU.ActiveCfg = Release|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.Release20|Any CPU.Build.0 = Release|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.ReleaseContractsReferences|Any CPU.ActiveCfg = Release|Any CPU
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984}.ReleaseContractsReferences|Any CPU.Build.0 = Release|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.DebugContracts|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.DebugContracts|Any CPU.Build.0 = Debug|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.Release20|Any CPU.ActiveCfg = Release|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.Release20|Any CPU.Build.0 = Release|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.ReleaseContractsReferences|Any CPU.ActiveCfg = Release|Any CPU
+		{DC6BD131-277C-478C-AFB1-AA502169916E}.ReleaseContractsReferences|Any CPU.Build.0 = Release|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.DebugContracts|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.DebugContracts|Any CPU.Build.0 = Debug|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.Release20|Any CPU.ActiveCfg = Release|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.Release20|Any CPU.Build.0 = Release|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.ReleaseContractsReferences|Any CPU.ActiveCfg = Release|Any CPU
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9}.ReleaseContractsReferences|Any CPU.Build.0 = Release|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.DebugContracts|Any CPU.ActiveCfg = Debug|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.DebugContracts|Any CPU.Build.0 = Debug|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.Release20|Any CPU.ActiveCfg = Release|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.Release20|Any CPU.Build.0 = Release|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.ReleaseContractsReferences|Any CPU.ActiveCfg = Release|Any CPU
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA}.ReleaseContractsReferences|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{595D6322-637A-4A36-97F1-D53F3F9ECEA7} = {7A2A3C07-B652-4759-AFC4-49378D764784}
-		{8836CFAC-D2B0-47A5-9A91-03A2218BF6FD} = {7A2A3C07-B652-4759-AFC4-49378D764784}
 		{62665C64-6DFB-4898-9422-0B03EE2BCC81} = {7A2A3C07-B652-4759-AFC4-49378D764784}
-		{C133CB88-DE57-4F1F-82C6-2B0A3DDCC9AA} = {7A2A3C07-B652-4759-AFC4-49378D764784}
 		{47311CE7-36A8-4D35-BAD7-F394CA2F26B0} = {22937B93-4129-4F68-AB14-F7AFE020BA8F}
+		{AF21DE48-4A9E-4F42-9C25-2F0A088EA984} = {7A2A3C07-B652-4759-AFC4-49378D764784}
+		{DC6BD131-277C-478C-AFB1-AA502169916E} = {7A2A3C07-B652-4759-AFC4-49378D764784}
+		{9DFAF0D9-7DFD-4604-AD8C-159110F37BF9} = {322A72C0-7F30-4853-8BB0-3590ACF4805C}
+		{C02241A0-EF55-4335-9545-BBBD223D8AAA} = {7A2A3C07-B652-4759-AFC4-49378D764784}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuickGraph1.vsmdi

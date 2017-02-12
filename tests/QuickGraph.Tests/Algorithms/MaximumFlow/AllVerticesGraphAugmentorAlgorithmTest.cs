@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
 
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -29,11 +30,11 @@
             Assert.Equal(g.EdgeCount, edgeCount);
         }
 
-        //[Fact]
-        //public void AugmentAll()
-        //{
-        //    Parallel.ForEach(TestGraphFactory.GetAdjacencyGraphs(), Augment);
-        //}
+        [Fact]
+        public void AugmentAll()
+        {
+            Parallel.ForEach(TestGraphFactory.GetAdjacencyGraphs(), Augment);
+        }
 
         private static void VerifyCount<TVertex, TEdge>(
             IMutableVertexAndEdgeListGraph<TVertex, TEdge> g,

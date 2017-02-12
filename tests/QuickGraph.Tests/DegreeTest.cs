@@ -1,6 +1,5 @@
 namespace QuickGraph.Tests
 {
-
     using Xunit;
 
     public class DegreeTest
@@ -55,9 +54,10 @@ namespace QuickGraph.Tests
             Assert.Equal(edgeCount, degCount);
         }
 
-        //[Fact]
-        //public void OutDegreeSumEqualsEdgeCountAll()
         //{
+        //public void OutDegreeSumEqualsEdgeCountAll()
+
+        //[Fact]
         //    foreach (var g in TestGraphFactory.GetBidirectionalGraphs())
         //        OutDegreeSumEqualsEdgeCount(g);
         //}

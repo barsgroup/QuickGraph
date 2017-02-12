@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.RankedShortestPath;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -43,31 +44,31 @@
             return target.ComputedShortestPaths;
         }
 
-        //[Fact]
-        //public void HoffmanPavleyRankedShortestPathAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetBidirectionalGraphs(),
-        //        g =>
-        //        {
-        //            if (g.VertexCount == 0)
-        //            {
-        //                return;
-        //            }
+        [Fact]
+        public void HoffmanPavleyRankedShortestPathAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetBidirectionalGraphs(),
+                g =>
+                {
+                    if (g.VertexCount == 0)
+                    {
+                        return;
+                    }
 
-        //            var weights = new Dictionary<Edge<string>, double>();
-        //            foreach (var e in g.Edges)
-        //                weights.Add(e, g.OutDegree(e.Source) + 1);
+                    var weights = new Dictionary<Edge<string>, double>();
+                    foreach (var e in g.Edges)
+                        weights.Add(e, g.OutDegree(e.Source) + 1);
 
-        //            HoffmanPavleyRankedShortestPath(
-        //                g,
-        //                weights,
-        //                g.Vertices.First(),
-        //                g.Vertices.Last(),
-        //                g.VertexCount
-        //            );
-        //        });
-        //}
+                    HoffmanPavleyRankedShortestPath(
+                        g,
+                        weights,
+                        g.Vertices.First(),
+                        g.Vertices.Last(),
+                        g.VertexCount
+                    );
+                });
+        }
 
         [Fact]
         public void HoffmanPavleyRankedShortestPathNetwork()

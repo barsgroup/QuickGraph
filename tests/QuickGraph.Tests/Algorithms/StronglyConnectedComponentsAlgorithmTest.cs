@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
 
     using QuickGraph.Algorithms.ConnectedComponents;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -39,14 +40,14 @@
             CheckStrong(strong);
         }
 
-        //[Fact]
-        //public void StronglyConnectedComponentAll()
-        //{
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //            Compute(g));
-        //}
+        [Fact]
+        public void StronglyConnectedComponentAll()
+        {
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                    Compute(g));
+        }
 
         [Fact]
         public void TwoVertex()

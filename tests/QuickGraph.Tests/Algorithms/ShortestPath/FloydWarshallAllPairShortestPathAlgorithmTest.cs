@@ -7,6 +7,7 @@
 
     using QuickGraph.Algorithms.Observers;
     using QuickGraph.Algorithms.ShortestPath;
+    using QuickGraph.Serialization;
 
     using Xunit;
 
@@ -104,37 +105,37 @@
             );
         }
 
-        //[Fact]
-        //public void FloydVsBellmannGraphMl()
-        //{
-        //    Func<Edge<string>, double> distances = e => 1;
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            Compare(
-        //                g,
-        //                distances,
-        //                (G, d) => new BellmanFordShortestPathAlgorithm<string, Edge<string>>(G, d)
-        //            );
-        //        });
-        //}
+        [Fact]
+        public void FloydVsBellmannGraphMl()
+        {
+            Func<Edge<string>, double> distances = e => 1;
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    Compare(
+                        g,
+                        distances,
+                        (G, d) => new BellmanFordShortestPathAlgorithm<string, Edge<string>>(G, d)
+                    );
+                });
+        }
 
-        //[Fact]
-        //public void FloydVsDijkstraGraphMl()
-        //{
-        //    Func<Edge<string>, double> distances = e => 1;
-        //    Parallel.ForEach(
-        //        TestGraphFactory.GetAdjacencyGraphs(),
-        //        g =>
-        //        {
-        //            Compare(
-        //                g,
-        //                distances,
-        //                (G, d) => new DijkstraShortestPathAlgorithm<string, Edge<string>>(G, d)
-        //            );
-        //        });
-        //}
+        [Fact]
+        public void FloydVsDijkstraGraphMl()
+        {
+            Func<Edge<string>, double> distances = e => 1;
+            Parallel.ForEach(
+                TestGraphFactory.GetAdjacencyGraphs(),
+                g =>
+                {
+                    Compare(
+                        g,
+                        distances,
+                        (G, d) => new DijkstraShortestPathAlgorithm<string, Edge<string>>(G, d)
+                    );
+                });
+        }
 
         private static void CheckPath<TVertex, TEdge>(TVertex source, TVertex target, TEdge[] fwedges) where TEdge : IEdge<TVertex>
         {
@@ -193,7 +194,7 @@
                         if (dijedges.Length != fwedges.Length)
                         {
                             DumpPaths(source, target, fwedges, dijedges);
-                            Assert.False(true,"path do not have the same length");
+                            Assert.False(true, "path do not have the same length");
                         }
 
                         // check path length are the same
@@ -202,7 +203,7 @@
                         if (fwlength != dijlength)
                         {
                             DumpPaths(source, target, fwedges, dijedges);
-                            Assert.False(true,"path do not have the same length");
+                            Assert.False(true, "path do not have the same length");
                         }
                     }
                 }
